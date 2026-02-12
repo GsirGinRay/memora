@@ -1,6 +1,6 @@
 {
-  "name": "VocabMaster",
-  "short_name": "VocabMaster",
+  "name": "Memora",
+  "short_name": "Memora",
   "description": "FSRS 間隔重複 + 多元測驗模式的英文單字學習 PWA",
   "start_url": "/zh-TW",
   "display": "standalone",

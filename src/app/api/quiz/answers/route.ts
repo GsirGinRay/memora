@@ -1,12 +1,28 @@
 import { NextResponse } from 'next/server'
+import { eq, and } from 'drizzle-orm'
 import { db } from '@/lib/db/drizzle'
-import { quizAnswers } from '@/lib/db/schema'
+import { quizAnswers, quizSessions } from '@/lib/db/schema'
 import { requireAuth } from '@/lib/auth/get-session'
 
 export async function POST(request: Request) {
   try {
-    await requireAuth()
+    const user = await requireAuth()
     const body = await request.json()
+
+    // Verify session belongs to current user
+    const [session] = await db
+      .select({ id: quizSessions.id })
+      .from(quizSessions)
+      .where(
+        and(
+          eq(quizSessions.id, body.sessionId),
+          eq(quizSessions.userId, user.id)
+        )
+      )
+
+    if (!session) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
+    }
 
     const [answer] = await db
       .insert(quizAnswers)

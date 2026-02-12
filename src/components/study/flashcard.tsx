@@ -1,8 +1,6 @@
 'use client'
 
-import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
 import type { Card as CardType } from '@/types/database'
 
 interface FlashcardProps {
@@ -13,13 +11,9 @@ interface FlashcardProps {
 
 export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
   return (
-    <div className="perspective-1000 w-full max-w-lg mx-auto">
+    <div className="flashcard-perspective w-full max-w-lg mx-auto">
       <div
-        className={cn(
-          'relative w-full min-h-[300px] cursor-pointer transition-transform duration-500',
-          'transform-style-3d',
-          flipped && 'rotate-y-180'
-        )}
+        className={`flashcard-inner relative w-full min-h-[300px] cursor-pointer ${flipped ? 'flipped' : ''}`}
         onClick={onFlip}
         role="button"
         tabIndex={0}
@@ -31,12 +25,7 @@ export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
         }}
       >
         {/* Front */}
-        <Card
-          className={cn(
-            'absolute inset-0 backface-hidden flex items-center justify-center',
-            flipped && 'invisible'
-          )}
-        >
+        <Card className="flashcard-face absolute inset-0 flex items-center justify-center">
           <CardContent className="text-center p-8">
             <p className="text-2xl whitespace-pre-wrap">{card.front}</p>
             {card.hint && !flipped && (
@@ -48,12 +37,7 @@ export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
         </Card>
 
         {/* Back */}
-        <Card
-          className={cn(
-            'absolute inset-0 backface-hidden flex items-center justify-center',
-            !flipped && 'invisible'
-          )}
-        >
+        <Card className="flashcard-face flashcard-back absolute inset-0 flex items-center justify-center">
           <CardContent className="text-center p-8">
             <p className="text-sm text-muted-foreground mb-2">{card.front}</p>
             <hr className="my-4" />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Stage, Layer, Rect, Image as KonvaImage, Transformer } from 'react-konva'
 import { Button } from '@/components/ui/button'
 import { Plus, Trash2, Save } from 'lucide-react'
@@ -24,12 +24,12 @@ export function OcclusionEditor({
   const stageRef = useRef(null)
 
   // Load image
-  useState(() => {
+  useEffect(() => {
     const img = new window.Image()
     img.crossOrigin = 'anonymous'
     img.onload = () => setImage(img)
     img.src = imageUrl
-  })
+  }, [imageUrl])
 
   const addRect = useCallback(() => {
     const newRect: OcclusionRect = {
