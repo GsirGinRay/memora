@@ -193,20 +193,6 @@ export const quizAnswers = pgTable('quiz_answers', {
   createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
 })
 
-export const cardMedia = pgTable('card_media', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  cardId: uuid('card_id')
-    .notNull()
-    .references(() => cards.id, { onDelete: 'cascade' }),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  filePath: text('file_path').notNull(),
-  fileType: varchar('file_type', { length: 50 }).notNull(),
-  fileSize: integer('file_size').notNull(),
-  createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
-})
-
 // ─── Relations ──────────────────────────────────────────
 
 export const usersRelations = relations(users, ({ many, one }) => ({

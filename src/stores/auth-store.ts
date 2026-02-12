@@ -1,11 +1,7 @@
 import { create } from 'zustand'
+import type { AppUser } from '@/types/database'
 
-export interface AppUser {
-  id: string
-  email: string
-  name?: string | null
-  image?: string | null
-}
+export type { AppUser }
 
 interface AuthState {
   user: AppUser | null

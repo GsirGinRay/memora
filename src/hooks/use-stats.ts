@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth-store'
+import { fetchJson } from '@/lib/api/fetch'
 
 export interface DailyReviewStat {
   date: string
@@ -12,15 +13,6 @@ export interface DailyReviewStat {
 export interface CardDistribution {
   state: string
   count: number
-}
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url)
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error ?? `Request failed: ${res.status}`)
-  }
-  return res.json()
 }
 
 export function useTodayStats() {

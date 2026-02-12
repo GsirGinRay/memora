@@ -1,28 +1,17 @@
 import { auth } from './auth'
+import type { AppUser } from '@/types/database'
 
-export interface AppUser {
-  id: string
-  email: string
-  name?: string | null
-  image?: string | null
-}
+export type { AppUser }
 
-export async function getAuthenticatedUser(): Promise<AppUser | null> {
+export async function requireAuth(): Promise<AppUser> {
   const session = await auth()
-  if (!session?.user?.id || !session.user.email) return null
-
+  if (!session?.user?.id || !session.user.email) {
+    throw new Error('Unauthorized')
+  }
   return {
     id: session.user.id,
     email: session.user.email,
     name: session.user.name,
     image: session.user.image,
   }
-}
-
-export async function requireAuth(): Promise<AppUser> {
-  const user = await getAuthenticatedUser()
-  if (!user) {
-    throw new Error('Unauthorized')
-  }
-  return user
 }

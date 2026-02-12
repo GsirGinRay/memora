@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "VocabMaster",
+    "appName": "Memora",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -65,7 +65,8 @@
     "confirmDelete": "Are you sure you want to delete this deck? All cards will be deleted.",
     "archived": "Archived",
     "archive": "Archive",
-    "unarchive": "Unarchive"
+    "unarchive": "Unarchive",
+    "study": "Study"
   },
   "card": {
     "addCard": "Add Card",
@@ -82,7 +83,8 @@
     "audio": "Audio",
     "preview": "Preview",
     "clozeHint": "Use {{c1::answer}} or {{c1::answer::hint}} syntax",
-    "confirmDelete": "Are you sure you want to delete this card?"
+    "confirmDelete": "Are you sure you want to delete this card?",
+    "cards": "Cards"
   },
   "study": {
     "showAnswer": "Show Answer",
@@ -95,7 +97,9 @@
     "accuracy": "Accuracy",
     "timeSpent": "Time Spent",
     "noCards": "No cards due for review",
-    "minutes": "min"
+    "minutes": "min",
+    "backToDecks": "Back to Decks",
+    "startQuiz": "Start Quiz"
   },
   "quiz": {
     "startQuiz": "Start Quiz",

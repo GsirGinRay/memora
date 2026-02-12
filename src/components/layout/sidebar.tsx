@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Library,
   GraduationCap,
-  ClipboardList,
   BarChart3,
   Settings,
   X,
@@ -48,7 +47,7 @@ export function Sidebar() {
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
           <Link href="/" className="flex items-center gap-2">
             <GraduationCap className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg">VocabMaster</span>
+            <span className="font-bold text-lg">Memora</span>
           </Link>
           <Button
             variant="ghost"

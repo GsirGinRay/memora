@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import { requireAuth } from '@/lib/auth/get-session'
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     const ext = file.name.split('.').pop() ?? 'bin'
-    const fileName = `${uuidv4()}.${ext}`
+    const fileName = `${randomUUID()}.${ext}`
     const userDir = join(UPLOAD_DIR, user.id)
 
     await mkdir(userDir, { recursive: true })

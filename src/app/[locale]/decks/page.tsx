@@ -72,7 +72,7 @@ export default function DecksPage() {
   const handleArchive = (deck: Deck) => {
     updateDeck.mutate({
       id: deck.id,
-      is_archived: !deck.is_archived,
+      isArchived: !deck.isArchived,
     })
   }
 

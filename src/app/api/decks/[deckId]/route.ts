@@ -13,10 +13,20 @@ export async function PATCH(
     const { deckId } = await params
     const body = await request.json()
 
+    const { name, description, color, isArchived } = body as {
+      name?: string
+      description?: string
+      color?: string
+      isArchived?: boolean
+    }
+
     const [deck] = await db
       .update(decks)
       .set({
-        ...body,
+        ...(name !== undefined && { name }),
+        ...(description !== undefined && { description }),
+        ...(color !== undefined && { color }),
+        ...(isArchived !== undefined && { isArchived }),
         updatedAt: new Date().toISOString(),
       })
       .where(and(eq(decks.id, deckId), eq(decks.userId, user.id)))

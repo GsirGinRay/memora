@@ -2,17 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth-store'
+import { fetchJson } from '@/lib/api/fetch'
 import type { Card, CardType } from '@/types/database'
 import { toast } from 'sonner'
-
-async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init)
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error ?? `Request failed: ${res.status}`)
-  }
-  return res.json()
-}
 
 export function useCards(deckId: string) {
   const user = useAuthStore((s) => s.user)
@@ -25,15 +17,13 @@ export function useCards(deckId: string) {
 }
 
 interface CreateCardInput {
-  deck_id: string
-  card_type: CardType
+  deckId: string
+  cardType: CardType
   front: string
   back: string
   hint?: string
   tags?: string[]
-  cloze_data?: Card['cloze_data']
-  occlusion_data?: Card['occlusion_data']
-  media_urls?: string[]
+  clozeData?: Card['clozeData']
 }
 
 export function useCreateCard() {
@@ -41,13 +31,13 @@ export function useCreateCard() {
 
   return useMutation({
     mutationFn: (input: CreateCardInput) =>
-      fetchJson<Card>(`/api/decks/${input.deck_id}/cards`, {
+      fetchJson<Card>(`/api/decks/${input.deckId}/cards`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(input),
       }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['cards', variables.deck_id] })
+      queryClient.invalidateQueries({ queryKey: ['cards', variables.deckId] })
       queryClient.invalidateQueries({ queryKey: ['decks'] })
     },
     onError: (error) => {
@@ -60,17 +50,17 @@ export function useUpdateCard() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (input: { id: string; deck_id: string } & Partial<CreateCardInput>) => {
-      const { id, deck_id, ...updates } = input
+    mutationFn: async (input: { id: string; deckId: string } & Partial<CreateCardInput>) => {
+      const { id, deckId, ...updates } = input
       const card = await fetchJson<Card>(`/api/cards/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       })
-      return { card, deck_id }
+      return { card, deckId }
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ['cards', result.deck_id] })
+      queryClient.invalidateQueries({ queryKey: ['cards', result.deckId] })
     },
     onError: (error) => {
       toast.error(error.message)

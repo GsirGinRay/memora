@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db/drizzle'
 import { quizSessions } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { requireAuth } from '@/lib/auth/get-session'
 
 export async function PATCH(
@@ -9,7 +9,7 @@ export async function PATCH(
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
-    await requireAuth()
+    const user = await requireAuth()
     const { sessionId } = await params
     const body = await request.json()
 
@@ -24,7 +24,7 @@ export async function PATCH(
         score,
         finishedAt: new Date().toISOString(),
       })
-      .where(eq(quizSessions.id, sessionId))
+      .where(and(eq(quizSessions.id, sessionId), eq(quizSessions.userId, user.id)))
       .returning()
 
     if (!session) {

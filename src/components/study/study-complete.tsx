@@ -57,10 +57,10 @@ export function StudyComplete({
 
           <div className="flex gap-3 justify-center">
             <Link href="/decks">
-              <Button variant="outline">{t('noCards')}</Button>
+              <Button variant="outline">{t('backToDecks')}</Button>
             </Link>
             <Link href={`/quiz/${deckId}`}>
-              <Button>Quiz</Button>
+              <Button>{t('startQuiz')}</Button>
             </Link>
           </div>
         </CardContent>

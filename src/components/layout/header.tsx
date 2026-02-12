@@ -22,7 +22,7 @@ export function Header() {
   const user = useAuthStore((s) => s.user)
 
   const handleLogout = async () => {
-    await signOut({ redirectTo: '/zh-TW/login' })
+    await signOut({ redirectTo: '/login' })
   }
 
   const initials = user?.email?.substring(0, 2).toUpperCase() ?? '?'

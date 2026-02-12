@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "VocabMaster",
+    "appName": "Memora",
     "loading": "載入中...",
     "save": "儲存",
     "cancel": "取消",
@@ -65,7 +65,8 @@
     "confirmDelete": "確定要刪除此牌組嗎？所有卡片將一併刪除。",
     "archived": "已封存",
     "archive": "封存",
-    "unarchive": "取消封存"
+    "unarchive": "取消封存",
+    "study": "學習"
   },
   "card": {
     "addCard": "新增卡片",
@@ -82,7 +83,8 @@
     "audio": "音訊",
     "preview": "預覽",
     "clozeHint": "使用 {{c1::答案}} 或 {{c1::答案::提示}} 語法",
-    "confirmDelete": "確定要刪除此卡片嗎？"
+    "confirmDelete": "確定要刪除此卡片嗎？",
+    "cards": "卡片"
   },
   "study": {
     "showAnswer": "顯示答案",
@@ -95,7 +97,9 @@
     "accuracy": "正確率",
     "timeSpent": "花費時間",
     "noCards": "目前沒有待複習的卡片",
-    "minutes": "分鐘"
+    "minutes": "分鐘",
+    "backToDecks": "返回牌組",
+    "startQuiz": "開始測驗"
   },
   "quiz": {
     "startQuiz": "開始測驗",

@@ -35,5 +35,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/(zh-TW|en)/:path*'],
+  matcher: ['/((?!api|_next|.*\\..*).*)', '/', '/(zh-TW|en)/:path*'],
 }

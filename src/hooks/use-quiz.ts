@@ -1,16 +1,8 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { fetchJson } from '@/lib/api/fetch'
 import type { QuizType } from '@/types/database'
-
-async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init)
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error ?? `Request failed: ${res.status}`)
-  }
-  return res.json()
-}
 
 interface CreateSessionInput {
   deckId: string

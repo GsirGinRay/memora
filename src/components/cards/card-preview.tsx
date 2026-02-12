@@ -27,7 +27,7 @@ export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {t('preview')}
-            <Badge variant="secondary">{card.card_type}</Badge>
+            <Badge variant="secondary">{card.cardType}</Badge>
           </DialogTitle>
         </DialogHeader>
 

@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreVertical, Pencil, Trash2, Archive, BookOpen, ClipboardList } from 'lucide-react'
+import { MoreVertical, Pencil, Trash2, Archive, BookOpen } from 'lucide-react'
 import type { Deck } from '@/types/database'
 
 interface DeckCardProps {
@@ -47,7 +47,7 @@ export function DeckCard({ deck, onEdit, onDelete, onArchive }: DeckCardProps) {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onArchive(deck)}>
                 <Archive className="mr-2 h-4 w-4" />
-                {deck.is_archived ? t('unarchive') : t('archive')}
+                {deck.isArchived ? t('unarchive') : t('archive')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(deck)}
@@ -69,19 +69,19 @@ export function DeckCard({ deck, onEdit, onDelete, onArchive }: DeckCardProps) {
       <CardContent>
         <div className="flex items-center gap-2 mb-4">
           <Badge variant="secondary">
-            {deck.card_count} {t('cards')}
+            {deck.cardCount} {t('cards')}
           </Badge>
-          {deck.new_count > 0 && (
+          {deck.newCount > 0 && (
             <Badge variant="default" className="bg-blue-500">
-              {deck.new_count} {t('new')}
+              {deck.newCount} {t('new')}
             </Badge>
           )}
-          {deck.due_count > 0 && (
+          {deck.dueCount > 0 && (
             <Badge variant="default" className="bg-green-500">
-              {deck.due_count} {t('due')}
+              {deck.dueCount} {t('due')}
             </Badge>
           )}
-          {deck.is_archived && (
+          {deck.isArchived && (
             <Badge variant="outline">{t('archived')}</Badge>
           )}
         </div>
@@ -90,13 +90,7 @@ export function DeckCard({ deck, onEdit, onDelete, onArchive }: DeckCardProps) {
           <Link href={`/study/${deck.id}`} className="flex-1">
             <Button variant="default" size="sm" className="w-full gap-1">
               <BookOpen className="h-3 w-3" />
-              {t('cards')}
-            </Button>
-          </Link>
-          <Link href={`/quiz/${deck.id}`} className="flex-1">
-            <Button variant="outline" size="sm" className="w-full gap-1">
-              <ClipboardList className="h-3 w-3" />
-              Quiz
+              {t('study')}
             </Button>
           </Link>
         </div>

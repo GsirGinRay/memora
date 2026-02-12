@@ -1,5 +1,4 @@
 import {
-  createEmptyCard,
   fsrs,
   generatorParameters,
   type Card as FSRSCard,
@@ -51,14 +50,14 @@ export function toFSRSCard(scheduling: CardScheduling): FSRSCard {
     due: new Date(scheduling.due),
     stability: scheduling.stability,
     difficulty: scheduling.difficulty,
-    elapsed_days: scheduling.elapsed_days,
-    scheduled_days: scheduling.scheduled_days,
+    elapsed_days: scheduling.elapsedDays,
+    scheduled_days: scheduling.scheduledDays,
     reps: scheduling.reps,
     lapses: scheduling.lapses,
     learning_steps: 0,
     state: toFSRSState(scheduling.state),
-    last_review: scheduling.last_review
-      ? new Date(scheduling.last_review)
+    last_review: scheduling.lastReview
+      ? new Date(scheduling.lastReview)
       : undefined,
   }
 }
@@ -69,12 +68,12 @@ export function fromFSRSCard(card: FSRSCard): Partial<CardScheduling> {
     due: card.due.toISOString(),
     stability: card.stability,
     difficulty: card.difficulty,
-    elapsed_days: card.elapsed_days,
-    scheduled_days: card.scheduled_days,
+    elapsedDays: card.elapsed_days,
+    scheduledDays: card.scheduled_days,
     reps: card.reps,
     lapses: card.lapses,
     state: fromFSRSState(card.state),
-    last_review: card.last_review?.toISOString() ?? null,
+    lastReview: card.last_review?.toISOString() ?? null,
   }
 }
 
@@ -126,12 +125,6 @@ export function scheduleCard(
     updatedScheduling: fromFSRSCard(scheduled.card),
     reviewLog: scheduled.log,
   }
-}
-
-// Create initial scheduling for a new card
-export function createInitialScheduling(): Partial<CardScheduling> {
-  const card = createEmptyCard()
-  return fromFSRSCard(card)
 }
 
 // Format interval for display

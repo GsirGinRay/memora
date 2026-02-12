@@ -2,21 +2,13 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth-store'
+import { fetchJson } from '@/lib/api/fetch'
 import { getSchedulingOptions } from '@/lib/fsrs/scheduler'
 import type { Card, CardScheduling, Rating } from '@/types/database'
 
 export interface StudyCard {
   card: Card
   scheduling: CardScheduling
-}
-
-async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init)
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error ?? `Request failed: ${res.status}`)
-  }
-  return res.json()
 }
 
 export function useStudyQueue(deckId: string) {

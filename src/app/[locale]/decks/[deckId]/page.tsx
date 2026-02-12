@@ -79,7 +79,7 @@ export default function DeckDetailPage() {
           </Button>
         </Link>
         <h1 className="text-2xl font-bold flex-1">
-          {cards?.length ?? 0} {t('addCard').replace('新增', '')}
+          {t('cards')} ({cards?.length ?? 0})
         </h1>
         <div className="flex gap-2">
           <Link href={`/study/${deckId}`}>
@@ -115,7 +115,7 @@ export default function DeckDetailPage() {
                   </p>
                 </div>
                 <Badge variant="secondary" className="shrink-0">
-                  {cardTypeLabel(card.card_type)}
+                  {cardTypeLabel(card.cardType)}
                 </Badge>
                 <div className="flex gap-1 shrink-0">
                   <Button

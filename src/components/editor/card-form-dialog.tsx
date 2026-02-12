@@ -46,7 +46,7 @@ export function CardFormDialog({
 
   useEffect(() => {
     if (card) {
-      setCardType(card.card_type)
+      setCardType(card.cardType)
       setFront(card.front)
       setBack(card.back)
       setHint(card.hint ?? '')
@@ -68,7 +68,7 @@ export function CardFormDialog({
       .map((t) => t.trim())
       .filter(Boolean)
 
-    const cloze_data =
+    const clozeData =
       cardType === 'cloze' && validateClozeText(front)
         ? parseClozeText(front)
         : null
@@ -77,13 +77,13 @@ export function CardFormDialog({
       updateCard.mutate(
         {
           id: card.id,
-          deck_id: deckId,
-          card_type: cardType,
+          deckId,
+          cardType,
           front,
           back,
           hint: hint || undefined,
           tags: tagList,
-          cloze_data,
+          clozeData,
         },
         {
           onSuccess: () => {
@@ -95,13 +95,13 @@ export function CardFormDialog({
     } else {
       createCard.mutate(
         {
-          deck_id: deckId,
-          card_type: cardType,
+          deckId,
+          cardType,
           front,
           back,
           hint: hint || undefined,
           tags: tagList,
-          cloze_data,
+          clozeData,
         },
         {
           onSuccess: () => {

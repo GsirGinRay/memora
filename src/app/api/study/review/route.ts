@@ -29,15 +29,15 @@ export async function POST(request: Request) {
       .where(eq(cardScheduling.id, scheduling.id))
 
     await db.insert(reviewLogs).values({
-      cardId: scheduling.card_id,
+      cardId: scheduling.cardId,
       userId: user.id,
       rating,
       state: (updatedScheduling.state ?? scheduling.state) as string,
       due: (updatedScheduling.due ?? scheduling.due) as string,
       stability: updatedScheduling.stability ?? scheduling.stability,
       difficulty: updatedScheduling.difficulty ?? scheduling.difficulty,
-      elapsedDays: updatedScheduling.elapsed_days ?? scheduling.elapsed_days,
-      scheduledDays: updatedScheduling.scheduled_days ?? scheduling.scheduled_days,
+      elapsedDays: updatedScheduling.elapsedDays ?? scheduling.elapsedDays,
+      scheduledDays: updatedScheduling.scheduledDays ?? scheduling.scheduledDays,
       reviewDurationMs: durationMs,
       reviewedAt: now.toISOString(),
     })

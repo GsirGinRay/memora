@@ -2,17 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth-store'
+import { fetchJson } from '@/lib/api/fetch'
 import type { Deck } from '@/types/database'
 import { toast } from 'sonner'
-
-async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init)
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error ?? `Request failed: ${res.status}`)
-  }
-  return res.json()
-}
 
 export function useDecks() {
   const user = useAuthStore((s) => s.user)
@@ -47,7 +39,7 @@ export function useUpdateDeck() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (input: { id: string; name?: string; description?: string; color?: string; is_archived?: boolean }) => {
+    mutationFn: (input: { id: string; name?: string; description?: string; color?: string; isArchived?: boolean }) => {
       const { id, ...updates } = input
       return fetchJson<Deck>(`/api/decks/${id}`, {
         method: 'PATCH',

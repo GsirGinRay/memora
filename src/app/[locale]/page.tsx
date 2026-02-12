@@ -15,8 +15,8 @@ export default function DashboardPage() {
   const { data: streak } = useStreakDays()
   const { data: decks } = useDecks()
 
-  const totalDue = decks?.reduce((sum, d) => sum + d.due_count, 0) ?? 0
-  const totalNew = decks?.reduce((sum, d) => sum + d.new_count, 0) ?? 0
+  const totalDue = decks?.reduce((sum, d) => sum + d.dueCount, 0) ?? 0
+  const totalNew = decks?.reduce((sum, d) => sum + d.newCount, 0) ?? 0
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -80,7 +80,7 @@ export default function DashboardPage() {
       {decks && decks.length > 0 ? (
         <div className="space-y-4">
           {decks
-            .filter((d) => !d.is_archived)
+            .filter((d) => !d.isArchived)
             .slice(0, 5)
             .map((deck) => (
               <Link key={deck.id} href={`/study/${deck.id}`}>
@@ -89,7 +89,7 @@ export default function DashboardPage() {
                     <div>
                       <p className="font-medium">{deck.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {deck.card_count} {t('dueCards').toLowerCase()}
+                        {deck.cardCount} {t('dueCards').toLowerCase()}
                       </p>
                     </div>
                     <Button size="sm">{t('startStudy')}</Button>
