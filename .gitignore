@@ -40,6 +40,9 @@ yarn-error.log*
 # serwist
 /public/sw.js
 
+# uploads
+/public/uploads
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
