@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(await file.arrayBuffer())
     await writeFile(join(userDir, fileName), buffer)
 
-    const publicUrl = `/uploads/${user.id}/${fileName}`
+    const publicUrl = `/api/uploads/${user.id}/${fileName}`
 
     return NextResponse.json({ url: publicUrl }, { status: 201 })
   } catch (error) {
