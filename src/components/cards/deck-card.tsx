@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreVertical, Pencil, Trash2, Archive, BookOpen } from 'lucide-react'
+import { MoreVertical, Pencil, Trash2, Archive, BookOpen, Layers } from 'lucide-react'
 import type { Deck } from '@/types/database'
 
 interface DeckCardProps {
@@ -87,6 +87,12 @@ export function DeckCard({ deck, onEdit, onDelete, onArchive }: DeckCardProps) {
         </div>
 
         <div className="flex gap-2">
+          <Link href={`/decks/${deck.id}`} className="flex-1">
+            <Button variant="outline" size="sm" className="w-full gap-1">
+              <Layers className="h-3 w-3" />
+              {t('cards')}
+            </Button>
+          </Link>
           <Link href={`/study/${deck.id}`} className="flex-1">
             <Button variant="default" size="sm" className="w-full gap-1">
               <BookOpen className="h-3 w-3" />
