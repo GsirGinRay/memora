@@ -74,11 +74,10 @@ function OcclusionOverlay({ rect, isActive, flipped }: OcclusionOverlayProps) {
           y={rect.y}
           width={rect.width}
           height={rect.height}
-          fill="rgba(239, 68, 68, 0.85)"
-          stroke="rgba(239, 68, 68, 1)"
-          strokeWidth="0.3"
+          fill="#dc2626"
+          stroke="#b91c1c"
+          strokeWidth="0.4"
           rx="0.5"
-          className="occlusion-pulse"
         />
         <text
           x={rect.x + rect.width / 2}
