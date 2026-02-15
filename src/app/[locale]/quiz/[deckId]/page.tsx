@@ -51,10 +51,12 @@ export default function QuizPage() {
   const [correctCount, setCorrectCount] = useState(0)
   const [finished, setFinished] = useState(false)
 
-  const handleStart = async () => {
-    if (!cards || cards.length === 0) return
+  const quizzableCards = cards?.filter((c) => c.cardType !== 'image_occlusion') ?? []
 
-    const shuffled = shuffleArray(cards)
+  const handleStart = async () => {
+    if (quizzableCards.length === 0) return
+
+    const shuffled = shuffleArray(quizzableCards)
     const selected = shuffled.slice(0, questionCount)
 
     const session = await createSession.mutateAsync({
@@ -139,7 +141,7 @@ export default function QuizPage() {
     )
   }
 
-  if (!cards || cards.length === 0) {
+  if (!cards || quizzableCards.length === 0) {
     return (
       <div className="p-4 md:p-6 text-center py-12">
         <p className="text-muted-foreground">{tCommon('noData')}</p>

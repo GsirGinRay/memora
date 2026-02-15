@@ -108,22 +108,6 @@ function OcclusionOverlay({ rect, isActive, flipped }: OcclusionOverlayProps) {
     )
   }
 
-  // Back: active rect highlighted with green border, others hidden
-  if (isActive) {
-    return (
-      <rect
-        x={rect.x}
-        y={rect.y}
-        width={rect.width}
-        height={rect.height}
-        fill="none"
-        stroke="#16a34a"
-        strokeWidth="0.8"
-        rx="0.5"
-        strokeDasharray="2 1"
-      />
-    )
-  }
-
+  // Back: no overlays, show original image
   return null
 }
