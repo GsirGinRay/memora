@@ -7,9 +7,10 @@ import { Link } from '@/i18n/routing'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList } from 'lucide-react'
+import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList, ImageIcon } from 'lucide-react'
 import { useCards, useDeleteCard } from '@/hooks/use-cards'
 import { CardFormDialog } from '@/components/editor/card-form-dialog'
+import { ImageOcclusionEditor } from '@/components/editor/image-occlusion-editor'
 import { DeleteConfirmDialog } from '@/components/cards/delete-confirm-dialog'
 import { CardPreview } from '@/components/cards/card-preview'
 import { toast } from 'sonner'
@@ -25,6 +26,7 @@ export default function DeckDetailPage() {
   const deleteCard = useDeleteCard()
 
   const [formOpen, setFormOpen] = useState(false)
+  const [occlusionOpen, setOcclusionOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<CardType | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<CardType | null>(null)
   const [previewCard, setPreviewCard] = useState<CardType | null>(null)
@@ -92,6 +94,15 @@ export default function DeckDetailPage() {
               <ClipboardList className="h-4 w-4" />
             </Button>
           </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            onClick={() => setOcclusionOpen(true)}
+            title={t('imageOcclusion')}
+          >
+            <ImageIcon className="h-4 w-4" />
+          </Button>
           <Button onClick={handleCreate} className="gap-2">
             <Plus className="h-4 w-4" />
             {t('addCard')}
@@ -108,10 +119,25 @@ export default function DeckDetailPage() {
               onClick={() => setPreviewCard(card)}
             >
               <CardContent className="flex items-center gap-4 py-3">
+                {card.cardType === 'image_occlusion' && card.mediaUrls[0] ? (
+                  <div className="w-10 h-10 rounded overflow-hidden shrink-0 bg-muted">
+                    <img
+                      src={card.mediaUrls[0]}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : null}
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium truncate">{card.front || '(empty)'}</p>
+                  <p className="font-medium truncate">
+                    {card.cardType === 'image_occlusion'
+                      ? card.back || t('imageOcclusion')
+                      : card.front || '(empty)'}
+                  </p>
                   <p className="text-sm text-muted-foreground truncate">
-                    {card.back || '(empty)'}
+                    {card.cardType === 'image_occlusion'
+                      ? t('imageOcclusion')
+                      : card.back || '(empty)'}
                   </p>
                 </div>
                 <Badge variant="secondary" className="shrink-0">
@@ -175,6 +201,12 @@ export default function DeckDetailPage() {
         open={!!previewCard}
         onOpenChange={(open) => !open && setPreviewCard(null)}
         card={previewCard}
+      />
+
+      <ImageOcclusionEditor
+        open={occlusionOpen}
+        onOpenChange={setOcclusionOpen}
+        deckId={deckId}
       />
     </div>
   )

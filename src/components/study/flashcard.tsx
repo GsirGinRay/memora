@@ -1,6 +1,7 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
+import { ImageOcclusionCard } from '@/components/study/image-occlusion-card'
 import type { Card as CardType } from '@/types/database'
 
 interface FlashcardProps {
@@ -10,6 +11,10 @@ interface FlashcardProps {
 }
 
 export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
+  if (card.cardType === 'image_occlusion') {
+    return <ImageOcclusionCard card={card} flipped={flipped} onFlip={onFlip} />
+  }
+
   return (
     <div className="flashcard-perspective w-full max-w-lg mx-auto">
       <div

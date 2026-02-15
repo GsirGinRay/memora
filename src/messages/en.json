@@ -84,7 +84,24 @@
     "preview": "Preview",
     "clozeHint": "Use {{c1::answer}} or {{c1::answer::hint}} syntax",
     "confirmDelete": "Are you sure you want to delete this card?",
-    "cards": "Cards"
+    "cards": "Cards",
+    "occlusion": {
+      "title": "Image Occlusion Card",
+      "selectImage": "Select an image to start",
+      "camera": "Camera",
+      "gallery": "Gallery",
+      "uploading": "Uploading...",
+      "drawMode": "Draw Mode",
+      "panMode": "Pan Mode",
+      "undo": "Undo",
+      "clearAll": "Clear All",
+      "rectLabels": "Occlusion Labels",
+      "noRects": "Draw rectangles on the image to create occlusions",
+      "labelPlaceholder": "Enter answer label",
+      "tags": "Tags",
+      "saveCards": "Save {count} cards",
+      "savedCards": "Created {count} image occlusion cards"
+    }
   },
   "study": {
     "showAnswer": "Show Answer",

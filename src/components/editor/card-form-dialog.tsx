@@ -18,6 +18,7 @@ import { useCreateCard, useUpdateCard } from '@/hooks/use-cards'
 import { parseClozeText, validateClozeText } from '@/lib/cloze/parser'
 import { toast } from 'sonner'
 import type { Card, CardType } from '@/types/database'
+import { ImageOcclusionEditor } from './image-occlusion-editor'
 
 interface CardFormDialogProps {
   open: boolean
@@ -43,6 +44,7 @@ export function CardFormDialog({
   const [back, setBack] = useState('')
   const [hint, setHint] = useState('')
   const [tags, setTags] = useState('')
+  const [occlusionOpen, setOcclusionOpen] = useState(false)
 
   useEffect(() => {
     if (card) {
@@ -116,6 +118,12 @@ export function CardFormDialog({
   const isLoading = createCard.isPending || updateCard.isPending
 
   return (
+    <>
+    <ImageOcclusionEditor
+      open={occlusionOpen}
+      onOpenChange={setOcclusionOpen}
+      deckId={deckId}
+    />
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
@@ -127,7 +135,15 @@ export function CardFormDialog({
             <Label>{t('cardType')}</Label>
             <Select
               value={cardType}
-              onValueChange={(v) => setCardType(v as CardType)}
+              onValueChange={(v) => {
+                const newType = v as CardType
+                if (newType === 'image_occlusion' && !card) {
+                  setOcclusionOpen(true)
+                  onOpenChange(false)
+                  return
+                }
+                setCardType(newType)
+              }}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -230,5 +246,6 @@ export function CardFormDialog({
         </form>
       </DialogContent>
     </Dialog>
+    </>
   )
 }

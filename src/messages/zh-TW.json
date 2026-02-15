@@ -84,7 +84,24 @@
     "preview": "預覽",
     "clozeHint": "使用 {{c1::答案}} 或 {{c1::答案::提示}} 語法",
     "confirmDelete": "確定要刪除此卡片嗎？",
-    "cards": "卡片"
+    "cards": "卡片",
+    "occlusion": {
+      "title": "圖片遮蔽卡片",
+      "selectImage": "選擇一張圖片開始",
+      "camera": "拍照",
+      "gallery": "相簿",
+      "uploading": "上傳中...",
+      "drawMode": "繪製模式",
+      "panMode": "瀏覽模式",
+      "undo": "復原",
+      "clearAll": "清除全部",
+      "rectLabels": "遮蔽區域標籤",
+      "noRects": "在圖片上拖曳繪製遮蔽區域",
+      "labelPlaceholder": "輸入答案標籤",
+      "tags": "標籤",
+      "saveCards": "儲存 {count} 張卡片",
+      "savedCards": "已建立 {count} 張圖片遮蔽卡片"
+    }
   },
   "study": {
     "showAnswer": "顯示答案",

@@ -146,3 +146,23 @@
 .flashcard-back {
   transform: rotateY(180deg);
 }
+
+/* Image Occlusion */
+.occlusion-canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.occlusion-pulse {
+  animation: occlusion-pulse 2s ease-in-out infinite;
+}
+
+@keyframes occlusion-pulse {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}

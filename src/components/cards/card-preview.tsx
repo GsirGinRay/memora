@@ -21,6 +21,10 @@ export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
 
   if (!card) return null
 
+  const isOcclusion = card.cardType === 'image_occlusion'
+  const imageUrl = isOcclusion ? card.mediaUrls[0] : null
+  const allRects = isOcclusion ? (card.occlusionData ?? []) : []
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -32,15 +36,59 @@ export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
         </DialogHeader>
 
         <div className="space-y-4">
-          <div className="rounded-md border p-4">
-            <p className="text-xs text-muted-foreground mb-1">{t('front')}</p>
-            <p className="whitespace-pre-wrap text-lg">{card.front}</p>
-          </div>
+          {isOcclusion && imageUrl ? (
+            <div className="relative rounded-md overflow-hidden border">
+              <img
+                src={imageUrl}
+                alt=""
+                className="w-full h-auto block"
+                draggable={false}
+              />
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                className="absolute inset-0 w-full h-full"
+              >
+                {allRects.map((rect, i) => (
+                  <g key={rect.id}>
+                    <rect
+                      x={rect.x}
+                      y={rect.y}
+                      width={rect.width}
+                      height={rect.height}
+                      fill={`rgba(239, 68, 68, ${rect.id === card.front ? 0.7 : 0.3})`}
+                      stroke="white"
+                      strokeWidth="0.3"
+                      rx="0.5"
+                    />
+                    <text
+                      x={rect.x + rect.width / 2}
+                      y={rect.y + rect.height / 2}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fill="white"
+                      fontSize="2.5"
+                      fontWeight="bold"
+                    >
+                      {rect.label || `#${i + 1}`}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            </div>
+          ) : (
+            <>
+              <div className="rounded-md border p-4">
+                <p className="text-xs text-muted-foreground mb-1">{t('front')}</p>
+                <p className="whitespace-pre-wrap text-lg">{card.front}</p>
+              </div>
 
-          <div className="rounded-md border p-4">
-            <p className="text-xs text-muted-foreground mb-1">{t('back')}</p>
-            <p className="whitespace-pre-wrap text-lg">{card.back}</p>
-          </div>
+              <div className="rounded-md border p-4">
+                <p className="text-xs text-muted-foreground mb-1">{t('back')}</p>
+                <p className="whitespace-pre-wrap text-lg">{card.back}</p>
+              </div>
+            </>
+          )}
 
           {card.hint && (
             <div className="rounded-md border p-4">
