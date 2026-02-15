@@ -50,8 +50,7 @@ export function ImageOcclusionEditor({
     }
   }, [open, reset])
 
-  const hasEmptyLabels = rects.some((r) => !r.label.trim())
-  const canSave = imageUrl && rects.length > 0 && !hasEmptyLabels
+  const canSave = imageUrl && rects.length > 0
 
   const handleSave = () => {
     if (!imageUrl || rects.length === 0) return
@@ -91,21 +90,9 @@ export function ImageOcclusionEditor({
             <>
               <OcclusionToolbar />
               <OcclusionCanvas />
-
-              <div className="space-y-2">
-                <Label>{t('rectLabels')}</Label>
-                <OcclusionRectList />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="occlusion-tags">{t('tags')}</Label>
-                <Input
-                  id="occlusion-tags"
-                  value={tags}
-                  onChange={(e) => setTags(e.target.value)}
-                  placeholder="tag1, tag2, tag3"
-                />
-              </div>
+              <p className="text-sm text-muted-foreground">
+                {t('rectCount', { count: rects.length })}
+              </p>
             </>
           )}
         </div>

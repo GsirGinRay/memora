@@ -99,6 +99,7 @@
       "noRects": "Draw rectangles on the image to create occlusions",
       "labelPlaceholder": "Enter answer label",
       "tags": "Tags",
+      "rectCount": "{count} occlusion regions drawn",
       "saveCards": "Save {count} cards",
       "savedCards": "Created {count} image occlusion cards"
     }

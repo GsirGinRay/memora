@@ -99,6 +99,7 @@
       "noRects": "在圖片上拖曳繪製遮蔽區域",
       "labelPlaceholder": "輸入答案標籤",
       "tags": "標籤",
+      "rectCount": "已繪製 {count} 個遮蔽區域",
       "saveCards": "儲存 {count} 張卡片",
       "savedCards": "已建立 {count} 張圖片遮蔽卡片"
     }

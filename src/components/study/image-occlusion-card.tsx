@@ -1,7 +1,6 @@
 'use client'
 
-import type { Card } from '@/types/database'
-import type { OcclusionRect } from '@/types/database'
+import type { Card, OcclusionRect } from '@/types/database'
 
 interface ImageOcclusionCardProps {
   card: Card
@@ -66,84 +65,65 @@ interface OcclusionOverlayProps {
 }
 
 function OcclusionOverlay({ rect, isActive, flipped }: OcclusionOverlayProps) {
-  if (isActive && !flipped) {
+  // Front: active rect fully occluded, others lightly shaded
+  if (!flipped) {
+    if (isActive) {
+      return (
+        <g>
+          <rect
+            x={rect.x}
+            y={rect.y}
+            width={rect.width}
+            height={rect.height}
+            fill="#dc2626"
+            stroke="#991b1b"
+            strokeWidth="0.5"
+            rx="0.5"
+          />
+          <text
+            x={rect.x + rect.width / 2}
+            y={rect.y + rect.height / 2}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fill="white"
+            fontSize="3"
+            fontWeight="bold"
+          >
+            ?
+          </text>
+        </g>
+      )
+    }
     return (
-      <g>
-        <rect
-          x={rect.x}
-          y={rect.y}
-          width={rect.width}
-          height={rect.height}
-          fill="#dc2626"
-          stroke="#b91c1c"
-          strokeWidth="0.4"
-          rx="0.5"
-        />
-        <text
-          x={rect.x + rect.width / 2}
-          y={rect.y + rect.height / 2}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fill="white"
-          fontSize="3"
-          fontWeight="bold"
-        >
-          ?
-        </text>
-      </g>
-    )
-  }
-
-  if (isActive && flipped) {
-    return (
-      <g>
-        <rect
-          x={rect.x}
-          y={rect.y}
-          width={rect.width}
-          height={rect.height}
-          fill="rgba(34, 197, 94, 0.3)"
-          stroke="rgba(34, 197, 94, 0.9)"
-          strokeWidth="0.4"
-          rx="0.5"
-        />
-        <text
-          x={rect.x + rect.width / 2}
-          y={rect.y + rect.height / 2}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fill="rgba(34, 197, 94, 1)"
-          fontSize="2.5"
-          fontWeight="bold"
-        >
-          {rect.label}
-        </text>
-      </g>
-    )
-  }
-
-  return (
-    <g>
       <rect
         x={rect.x}
         y={rect.y}
         width={rect.width}
         height={rect.height}
-        fill="rgba(148, 163, 184, 0.25)"
-        stroke="rgba(148, 163, 184, 0.5)"
+        fill="rgba(100, 116, 139, 0.2)"
+        stroke="rgba(100, 116, 139, 0.4)"
         strokeWidth="0.2"
         rx="0.5"
       />
-      <text
-        x={rect.x + rect.width / 2}
-        y={rect.y + rect.height / 2}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="rgba(100, 116, 139, 0.8)"
-        fontSize="2"
-      >
-        {rect.label}
-      </text>
-    </g>
-  )
+    )
+  }
+
+  // Back: active rect highlighted with green border, others hidden
+  if (isActive) {
+    return (
+      <rect
+        x={rect.x}
+        y={rect.y}
+        width={rect.width}
+        height={rect.height}
+        fill="none"
+        stroke="#16a34a"
+        strokeWidth="0.8"
+        rx="0.5"
+        strokeDasharray="2 1"
+      />
+    )
+  }
+
+  return null
 }
