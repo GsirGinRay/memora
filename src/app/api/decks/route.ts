@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db/drizzle'
 import { decks } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, sql } from 'drizzle-orm'
 import { requireAuth } from '@/lib/auth/get-session'
 
 export async function GET() {
@@ -9,7 +9,19 @@ export async function GET() {
     const user = await requireAuth()
 
     const result = await db
-      .select()
+      .select({
+        id: decks.id,
+        userId: decks.userId,
+        name: decks.name,
+        description: decks.description,
+        color: decks.color,
+        isArchived: decks.isArchived,
+        cardCount: sql<number>`COALESCE((SELECT COUNT(*)::int FROM cards WHERE cards.deck_id = ${decks.id}), 0)`,
+        newCount: sql<number>`COALESCE((SELECT COUNT(*)::int FROM card_scheduling cs JOIN cards c ON cs.card_id = c.id WHERE c.deck_id = ${decks.id} AND cs.state = 'new'), 0)`,
+        dueCount: sql<number>`COALESCE((SELECT COUNT(*)::int FROM card_scheduling cs JOIN cards c ON cs.card_id = c.id WHERE c.deck_id = ${decks.id} AND cs.due <= NOW() AND cs.state != 'new'), 0)`,
+        createdAt: decks.createdAt,
+        updatedAt: decks.updatedAt,
+      })
       .from(decks)
       .where(eq(decks.userId, user.id))
       .orderBy(desc(decks.updatedAt))
