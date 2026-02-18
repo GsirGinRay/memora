@@ -85,6 +85,19 @@
     "clozeHint": "Use {{c1::answer}} or {{c1::answer::hint}} syntax",
     "confirmDelete": "Are you sure you want to delete this card?",
     "cards": "Cards",
+    "media": {
+      "uploadImage": "Upload Image",
+      "uploadAudio": "Upload Audio",
+      "removeImage": "Remove Image",
+      "removeAudio": "Remove Audio",
+      "tts": "Text-to-Speech",
+      "ttsEnabled": "Enable TTS",
+      "ttsLang": "TTS Language",
+      "ttsEnglish": "English",
+      "ttsChinese": "Chinese",
+      "replay": "Replay",
+      "markdownSupported": "Markdown supported (bold, italic, lists, etc.)"
+    },
     "occlusion": {
       "title": "Image Occlusion Card",
       "selectImage": "Select an image to start",
@@ -117,7 +130,20 @@
     "noCards": "No cards due for review",
     "minutes": "min",
     "backToDecks": "Back to Decks",
-    "startQuiz": "Start Quiz"
+    "startQuiz": "Start Quiz",
+    "customStudy": "Custom Study",
+    "startCustomStudy": "Start Study",
+    "modeAll": "Review All",
+    "modeAllDesc": "Review all cards in the deck",
+    "modeFailed": "Failed Cards Only",
+    "modeFailedDesc": "Only review cards you pressed Again on",
+    "modeTags": "Filter by Tags",
+    "modeTagsDesc": "Only review cards with specific tags",
+    "modeAhead": "Study Ahead",
+    "modeAheadDesc": "Review cards that are not yet due",
+    "selectTags": "Select Tags",
+    "cramMode": "Custom Study",
+    "cramModeNote": "Does not affect scheduling"
   },
   "quiz": {
     "startQuiz": "Start Quiz",

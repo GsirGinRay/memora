@@ -116,6 +116,7 @@ export const cards = pgTable('cards', {
   hint: text('hint'),
   tags: jsonb('tags').$type<string[]>().default([]).notNull(),
   mediaUrls: jsonb('media_urls').$type<string[]>().default([]).notNull(),
+  media: jsonb('media').$type<import('@/types/database').CardMedia | null>(),
   occlusionData: jsonb('occlusion_data'),
   clozeData: jsonb('cloze_data'),
   createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),

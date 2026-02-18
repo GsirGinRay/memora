@@ -85,6 +85,19 @@
     "clozeHint": "使用 {{c1::答案}} 或 {{c1::答案::提示}} 語法",
     "confirmDelete": "確定要刪除此卡片嗎？",
     "cards": "卡片",
+    "media": {
+      "uploadImage": "上傳圖片",
+      "uploadAudio": "上傳音訊",
+      "removeImage": "移除圖片",
+      "removeAudio": "移除音訊",
+      "tts": "文字轉語音",
+      "ttsEnabled": "啟用 TTS",
+      "ttsLang": "TTS 語言",
+      "ttsEnglish": "英文",
+      "ttsChinese": "中文",
+      "replay": "重播",
+      "markdownSupported": "支援 Markdown 格式（粗體、斜體、列表等）"
+    },
     "occlusion": {
       "title": "圖片遮蔽卡片",
       "selectImage": "選擇一張圖片開始",
@@ -117,7 +130,20 @@
     "noCards": "目前沒有待複習的卡片",
     "minutes": "分鐘",
     "backToDecks": "返回牌組",
-    "startQuiz": "開始測驗"
+    "startQuiz": "開始測驗",
+    "customStudy": "自訂學習",
+    "startCustomStudy": "開始學習",
+    "modeAll": "全部複習",
+    "modeAllDesc": "複習牌組中所有卡片",
+    "modeFailed": "僅複習失敗的卡片",
+    "modeFailedDesc": "只複習曾經按「重來」的卡片",
+    "modeTags": "依標籤篩選",
+    "modeTagsDesc": "只複習特定標籤的卡片",
+    "modeAhead": "提前學習",
+    "modeAheadDesc": "複習尚未到期的卡片",
+    "selectTags": "選擇標籤",
+    "cramMode": "自訂學習",
+    "cramModeNote": "不影響排程"
   },
   "quiz": {
     "startQuiz": "開始測驗",

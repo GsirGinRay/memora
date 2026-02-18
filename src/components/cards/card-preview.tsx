@@ -8,6 +8,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { MarkdownRenderer } from '@/components/shared/markdown-renderer'
+import { AudioPlayer } from '@/components/shared/audio-player'
+import { TTSButton } from '@/components/shared/tts-button'
+import { getTTSLang } from '@/lib/tts/constants'
 import type { Card } from '@/types/database'
 
 interface CardPreviewProps {
@@ -24,6 +28,8 @@ export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
   const isOcclusion = card.cardType === 'image_occlusion'
   const imageUrl = isOcclusion ? card.mediaUrls[0] : null
   const allRects = isOcclusion ? (card.occlusionData ?? []) : []
+
+  const ttsLang = getTTSLang(card.media?.tts?.lang)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -80,12 +86,38 @@ export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
             <>
               <div className="rounded-md border p-4">
                 <p className="text-xs text-muted-foreground mb-1">{t('front')}</p>
-                <p className="whitespace-pre-wrap text-lg">{card.front}</p>
+                {card.media?.front?.imageUrl && (
+                  <img src={card.media.front.imageUrl} alt="" className="max-h-40 rounded-md mb-2" />
+                )}
+                <MarkdownRenderer content={card.front} className="text-lg" />
+                {card.media?.front?.audioUrl && (
+                  <div className="mt-2">
+                    <AudioPlayer src={card.media.front.audioUrl} />
+                  </div>
+                )}
+                {card.media?.tts?.enabled && (
+                  <div className="mt-1">
+                    <TTSButton text={card.front} lang={ttsLang} />
+                  </div>
+                )}
               </div>
 
               <div className="rounded-md border p-4">
                 <p className="text-xs text-muted-foreground mb-1">{t('back')}</p>
-                <p className="whitespace-pre-wrap text-lg">{card.back}</p>
+                {card.media?.back?.imageUrl && (
+                  <img src={card.media.back.imageUrl} alt="" className="max-h-40 rounded-md mb-2" />
+                )}
+                <MarkdownRenderer content={card.back} className="text-lg" />
+                {card.media?.back?.audioUrl && (
+                  <div className="mt-2">
+                    <AudioPlayer src={card.media.back.audioUrl} />
+                  </div>
+                )}
+                {card.media?.tts?.enabled && (
+                  <div className="mt-1">
+                    <TTSButton text={card.back} lang={ttsLang} />
+                  </div>
+                )}
               </div>
             </>
           )}

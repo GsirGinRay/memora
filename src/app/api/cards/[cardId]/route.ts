@@ -1,8 +1,35 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { db } from '@/lib/db/drizzle'
 import { cards } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { requireAuth } from '@/lib/auth/get-session'
+
+const mediaSideSchema = z.object({
+  imageUrl: z.string().max(2000).optional(),
+  audioUrl: z.string().max(2000).optional(),
+}).optional()
+
+const cardMediaSchema = z.object({
+  front: mediaSideSchema,
+  back: mediaSideSchema,
+  tts: z.object({
+    enabled: z.boolean(),
+    lang: z.enum(['en', 'zh-TW']),
+  }).optional(),
+}).nullable().optional()
+
+const updateCardSchema = z.object({
+  front: z.string().min(1).max(10000).optional(),
+  back: z.string().max(10000).optional(),
+  hint: z.string().max(1000).nullable().optional(),
+  tags: z.array(z.string().max(100)).max(50).optional(),
+  card_type: z.enum(['basic', 'cloze', 'image_occlusion', 'audio']).optional(),
+  cloze_data: z.any().nullable().optional(),
+  occlusion_data: z.any().nullable().optional(),
+  media_urls: z.array(z.string().max(2000)).max(20).optional(),
+  media: cardMediaSchema,
+}).strict()
 
 export async function PATCH(
   request: Request,
@@ -11,7 +38,9 @@ export async function PATCH(
   try {
     const user = await requireAuth()
     const { cardId } = await params
-    const body = await request.json()
+    const raw = await request.json()
+
+    const body = updateCardSchema.parse(raw)
 
     const updateData: Record<string, unknown> = {
       updatedAt: new Date().toISOString(),
@@ -25,6 +54,7 @@ export async function PATCH(
     if (body.cloze_data !== undefined) updateData.clozeData = body.cloze_data
     if (body.occlusion_data !== undefined) updateData.occlusionData = body.occlusion_data
     if (body.media_urls !== undefined) updateData.mediaUrls = body.media_urls
+    if (body.media !== undefined) updateData.media = body.media
 
     const [card] = await db
       .update(cards)
@@ -38,6 +68,9 @@ export async function PATCH(
 
     return NextResponse.json(card)
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Invalid input', details: error.issues }, { status: 400 })
+    }
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

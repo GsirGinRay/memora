@@ -2,23 +2,41 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
-import { useParams } from 'next/navigation'
+import { useParams, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Flashcard } from '@/components/study/flashcard'
 import { RatingButtons } from '@/components/study/rating-buttons'
 import { StudyComplete } from '@/components/study/study-complete'
 import { useStudyQueue, useSubmitReview, getSchedulingOptions } from '@/hooks/use-study'
-import type { Rating } from '@/types/database'
+import { useCustomStudyQueue } from '@/hooks/use-custom-study'
+import type { Rating, CustomStudyMode } from '@/types/database'
 
 export default function StudyPage() {
   const t = useTranslations('study')
   const tCommon = useTranslations('common')
   const params = useParams()
+  const searchParams = useSearchParams()
   const deckId = params.deckId as string
 
-  const { data: queue, isLoading } = useStudyQueue(deckId)
+  const mode = searchParams.get('mode') as CustomStudyMode | null
+  const tagsParam = searchParams.get('tags')
+  const isCramMode = !!mode
+
+  const customParams = isCramMode
+    ? {
+        mode: mode,
+        tags: tagsParam ? tagsParam.split(',').filter(Boolean) : undefined,
+      }
+    : null
+
+  const { data: normalQueue, isLoading: normalLoading } = useStudyQueue(deckId)
+  const { data: customQueue, isLoading: customLoading } = useCustomStudyQueue(deckId, customParams)
   const submitReview = useSubmitReview()
+
+  const queue = isCramMode ? customQueue : normalQueue
+  const isLoading = isCramMode ? customLoading : normalLoading
 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
@@ -31,9 +49,9 @@ export default function StudyPage() {
   const totalCards = queue?.length ?? 0
   const isComplete = !isLoading && (!queue || queue.length === 0 || currentIndex >= totalCards)
 
-  const options = currentStudyCard
+  const options = currentStudyCard && !isCramMode
     ? getSchedulingOptions(currentStudyCard.scheduling)
-    : []
+    : null
 
   const handleFlip = useCallback(() => {
     setFlipped(true)
@@ -45,11 +63,13 @@ export default function StudyPage() {
 
       const durationMs = Date.now() - cardStartRef.current
 
-      submitReview.mutate({
-        scheduling: currentStudyCard.scheduling,
-        rating,
-        durationMs,
-      })
+      if (!isCramMode) {
+        submitReview.mutate({
+          scheduling: currentStudyCard.scheduling,
+          rating,
+          durationMs,
+        })
+      }
 
       setCardsStudied((prev) => prev + 1)
       if (rating >= 3) {
@@ -60,10 +80,9 @@ export default function StudyPage() {
       setCurrentIndex((prev) => prev + 1)
       cardStartRef.current = Date.now()
     },
-    [currentStudyCard, submitReview]
+    [currentStudyCard, submitReview, isCramMode]
   )
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
@@ -116,6 +135,14 @@ export default function StudyPage() {
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-2xl mx-auto">
+      {isCramMode && (
+        <div className="flex justify-center">
+          <Badge variant="secondary" className="text-sm">
+            {t('cramMode')} — {t('cramModeNote')}
+          </Badge>
+        </div>
+      )}
+
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>
@@ -144,9 +171,9 @@ export default function StudyPage() {
             </div>
           ) : (
             <RatingButtons
-              options={options}
+              options={options ?? undefined}
               onRate={handleRate}
-              disabled={submitReview.isPending}
+              disabled={!isCramMode && submitReview.isPending}
             />
           )}
         </>

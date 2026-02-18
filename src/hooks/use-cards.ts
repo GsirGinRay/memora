@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth-store'
 import { fetchJson } from '@/lib/api/fetch'
-import type { Card, CardType, OcclusionRect } from '@/types/database'
+import type { Card, CardType, CardMedia, OcclusionRect } from '@/types/database'
 import { toast } from 'sonner'
 
 export function useCards(deckId: string) {
@@ -25,6 +25,7 @@ interface CreateCardInput {
   tags?: string[]
   clozeData?: Card['clozeData']
   mediaUrls?: string[]
+  media?: CardMedia | null
   occlusionData?: OcclusionRect[]
 }
 
@@ -37,6 +38,7 @@ function toSnakeCaseBody(input: CreateCardInput) {
     tags: input.tags,
     cloze_data: input.clozeData,
     media_urls: input.mediaUrls,
+    media: input.media,
     occlusion_data: input.occlusionData,
   }
 }
@@ -75,6 +77,7 @@ export function useUpdateCard() {
       if (updates.tags !== undefined) snakeBody.tags = updates.tags
       if (updates.clozeData !== undefined) snakeBody.cloze_data = updates.clozeData
       if (updates.mediaUrls !== undefined) snakeBody.media_urls = updates.mediaUrls
+      if (updates.media !== undefined) snakeBody.media = updates.media
       if (updates.occlusionData !== undefined) snakeBody.occlusion_data = updates.occlusionData
 
       const card = await fetchJson<Card>(`/api/cards/${id}`, {

@@ -34,6 +34,7 @@ export interface Card {
   hint: string | null
   tags: string[]
   mediaUrls: string[]
+  media: CardMedia | null
   occlusionData: OcclusionRect[] | null
   clozeData: ClozeData | null
   createdAt: string
@@ -64,6 +65,14 @@ export interface OcclusionRect {
   width: number
   height: number
   label: string
+}
+
+export type CustomStudyMode = 'all' | 'failed' | 'tags' | 'ahead'
+
+export interface CardMedia {
+  front?: { imageUrl?: string; audioUrl?: string }
+  back?: { imageUrl?: string; audioUrl?: string }
+  tts?: { enabled: boolean; lang: 'en' | 'zh-TW' }
 }
 
 export interface ClozeData {

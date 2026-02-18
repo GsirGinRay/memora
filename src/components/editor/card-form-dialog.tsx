@@ -16,8 +16,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCreateCard, useUpdateCard } from '@/hooks/use-cards'
 import { parseClozeText, validateClozeText } from '@/lib/cloze/parser'
+import { MediaUploadSection } from '@/components/editor/media-upload-section'
+import { TTSSettings } from '@/components/editor/tts-settings'
+import { MarkdownRenderer } from '@/components/shared/markdown-renderer'
+import { AudioPlayer } from '@/components/shared/audio-player'
 import { toast } from 'sonner'
-import type { Card, CardType } from '@/types/database'
+import type { Card, CardType, CardMedia } from '@/types/database'
 import { ImageOcclusionEditor } from './image-occlusion-editor'
 
 interface CardFormDialogProps {
@@ -26,6 +30,8 @@ interface CardFormDialogProps {
   deckId: string
   card?: Card | null
 }
+
+const EMPTY_MEDIA: CardMedia = {}
 
 export function CardFormDialog({
   open,
@@ -44,6 +50,7 @@ export function CardFormDialog({
   const [back, setBack] = useState('')
   const [hint, setHint] = useState('')
   const [tags, setTags] = useState('')
+  const [media, setMedia] = useState<CardMedia>(EMPTY_MEDIA)
   const [occlusionOpen, setOcclusionOpen] = useState(false)
 
   useEffect(() => {
@@ -53,12 +60,14 @@ export function CardFormDialog({
       setBack(card.back)
       setHint(card.hint ?? '')
       setTags(card.tags.join(', '))
+      setMedia(card.media ?? EMPTY_MEDIA)
     } else {
       setCardType('basic')
       setFront('')
       setBack('')
       setHint('')
       setTags('')
+      setMedia(EMPTY_MEDIA)
     }
   }, [card, open])
 
@@ -75,6 +84,9 @@ export function CardFormDialog({
         ? parseClozeText(front)
         : null
 
+    const hasMedia = media.front || media.back || media.tts
+    const mediaPayload = hasMedia ? media : null
+
     if (card) {
       updateCard.mutate(
         {
@@ -86,6 +98,7 @@ export function CardFormDialog({
           hint: hint || undefined,
           tags: tagList,
           clozeData,
+          media: mediaPayload,
         },
         {
           onSuccess: () => {
@@ -104,6 +117,7 @@ export function CardFormDialog({
           hint: hint || undefined,
           tags: tagList,
           clozeData,
+          media: mediaPayload,
         },
         {
           onSuccess: () => {
@@ -125,7 +139,7 @@ export function CardFormDialog({
       deckId={deckId}
     />
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{card ? t('editCard') : t('addCard')}</DialogTitle>
         </DialogHeader>
@@ -243,6 +257,12 @@ export function CardFormDialog({
                   }
                   required
                 />
+                <p className="text-xs text-muted-foreground">{t('media.markdownSupported')}</p>
+                <MediaUploadSection
+                  side="front"
+                  media={media}
+                  onMediaChange={setMedia}
+                />
               </div>
 
               {cardType !== 'cloze' && (
@@ -254,6 +274,11 @@ export function CardFormDialog({
                     onChange={(e) => setBack(e.target.value)}
                     className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     placeholder={t('back')}
+                  />
+                  <MediaUploadSection
+                    side="back"
+                    media={media}
+                    onMediaChange={setMedia}
                   />
                 </div>
               )}
@@ -277,18 +302,32 @@ export function CardFormDialog({
                   placeholder="tag1, tag2, tag3"
                 />
               </div>
+
+              <TTSSettings media={media} onMediaChange={setMedia} />
             </TabsContent>
 
             <TabsContent value="preview" className="min-h-[200px]">
               <div className="rounded-md border p-4 space-y-4">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">{t('front')}</p>
-                  <p className="whitespace-pre-wrap">{front || '(empty)'}</p>
+                  {media.front?.imageUrl && (
+                    <img src={media.front.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
+                  )}
+                  <MarkdownRenderer content={front || '(empty)'} />
+                  {media.front?.audioUrl && (
+                    <AudioPlayer src={media.front.audioUrl} />
+                  )}
                 </div>
                 <hr />
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">{t('back')}</p>
-                  <p className="whitespace-pre-wrap">{back || '(empty)'}</p>
+                  {media.back?.imageUrl && (
+                    <img src={media.back.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
+                  )}
+                  <MarkdownRenderer content={back || '(empty)'} />
+                  {media.back?.audioUrl && (
+                    <AudioPlayer src={media.back.audioUrl} />
+                  )}
                 </div>
               </div>
             </TabsContent>

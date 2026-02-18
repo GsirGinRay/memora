@@ -7,20 +7,23 @@ import { Link } from '@/i18n/routing'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList, ImageIcon } from 'lucide-react'
+import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList, ImageIcon, Shuffle } from 'lucide-react'
 import { useCards, useDeleteCard } from '@/hooks/use-cards'
 import { CardFormDialog } from '@/components/editor/card-form-dialog'
 import { ImageOcclusionEditor } from '@/components/editor/image-occlusion-editor'
 import { DeleteConfirmDialog } from '@/components/cards/delete-confirm-dialog'
 import { CardPreview } from '@/components/cards/card-preview'
+import { CustomStudyDialog } from '@/components/study/custom-study-dialog'
 import { toast } from 'sonner'
 import type { Card as CardType } from '@/types/database'
 
 export default function DeckDetailPage() {
   const t = useTranslations('card')
+  const tStudy = useTranslations('study')
   const tCommon = useTranslations('common')
   const params = useParams()
   const deckId = params.deckId as string
+  const locale = params.locale as string
 
   const { data: cards, isLoading } = useCards(deckId)
   const deleteCard = useDeleteCard()
@@ -30,6 +33,7 @@ export default function DeckDetailPage() {
   const [editingCard, setEditingCard] = useState<CardType | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<CardType | null>(null)
   const [previewCard, setPreviewCard] = useState<CardType | null>(null)
+  const [customStudyOpen, setCustomStudyOpen] = useState(false)
 
   const handleCreate = () => {
     setEditingCard(null)
@@ -94,6 +98,15 @@ export default function DeckDetailPage() {
               <ClipboardList className="h-4 w-4" />
             </Button>
           </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            onClick={() => setCustomStudyOpen(true)}
+            title={tStudy('customStudy')}
+          >
+            <Shuffle className="h-4 w-4" />
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -207,6 +220,13 @@ export default function DeckDetailPage() {
         open={occlusionOpen}
         onOpenChange={setOcclusionOpen}
         deckId={deckId}
+      />
+
+      <CustomStudyDialog
+        open={customStudyOpen}
+        onOpenChange={setCustomStudyOpen}
+        deckId={deckId}
+        locale={locale}
       />
     </div>
   )

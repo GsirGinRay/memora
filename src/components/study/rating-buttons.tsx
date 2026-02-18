@@ -6,7 +6,7 @@ import type { Rating } from '@/types/database'
 import type { SchedulingOption } from '@/lib/fsrs/scheduler'
 
 interface RatingButtonsProps {
-  options: SchedulingOption[]
+  options?: SchedulingOption[]
   onRate: (rating: Rating) => void
   disabled?: boolean
 }
@@ -25,6 +25,8 @@ const ratingKeys: Record<Rating, string> = {
   4: '4',
 }
 
+const ALL_RATINGS: Rating[] = [1, 2, 3, 4]
+
 export function RatingButtons({ options, onRate, disabled }: RatingButtonsProps) {
   const t = useTranslations('study')
 
@@ -35,18 +37,36 @@ export function RatingButtons({ options, onRate, disabled }: RatingButtonsProps)
     4: t('easy'),
   }
 
+  if (options) {
+    return (
+      <div className="flex gap-2 justify-center w-full max-w-lg mx-auto">
+        {options.map((option) => (
+          <Button
+            key={option.rating}
+            className={`flex-1 flex flex-col gap-1 h-auto py-3 ${ratingColors[option.rating]}`}
+            onClick={() => onRate(option.rating)}
+            disabled={disabled}
+          >
+            <span className="font-medium">{labels[option.rating]}</span>
+            <span className="text-xs opacity-80">{option.interval}</span>
+            <span className="text-[10px] opacity-60">({ratingKeys[option.rating]})</span>
+          </Button>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="flex gap-2 justify-center w-full max-w-lg mx-auto">
-      {options.map((option) => (
+      {ALL_RATINGS.map((rating) => (
         <Button
-          key={option.rating}
-          className={`flex-1 flex flex-col gap-1 h-auto py-3 ${ratingColors[option.rating]}`}
-          onClick={() => onRate(option.rating)}
+          key={rating}
+          className={`flex-1 flex flex-col gap-1 h-auto py-3 ${ratingColors[rating]}`}
+          onClick={() => onRate(rating)}
           disabled={disabled}
         >
-          <span className="font-medium">{labels[option.rating]}</span>
-          <span className="text-xs opacity-80">{option.interval}</span>
-          <span className="text-[10px] opacity-60">({ratingKeys[option.rating]})</span>
+          <span className="font-medium">{labels[rating]}</span>
+          <span className="text-[10px] opacity-60">({ratingKeys[rating]})</span>
         </Button>
       ))}
     </div>
