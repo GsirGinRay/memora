@@ -83,7 +83,7 @@
     "imageOcclusion": "圖片遮蔽",
     "audio": "音訊",
     "preview": "預覽",
-    "clozeHint": "使用 {{c1::答案}} 或 {{c1::答案::提示}} 語法",
+    "clozeHint": "例：太陽系有 {{c1::八}} 大行星\n\n{{c1::}} 裡的文字會變成空格，學習時需要回想填入",
     "clozeGuideTitle": "填空卡片用法",
     "clozeGuideDesc": "用 {{c1::}} 包住要挖空的部分，學習時該部分會被隱藏。",
     "clozeExample1": "太陽系有 {{c1::八}} 大行星",

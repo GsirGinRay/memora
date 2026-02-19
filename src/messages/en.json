@@ -83,7 +83,7 @@
     "imageOcclusion": "Image Occlusion",
     "audio": "Audio",
     "preview": "Preview",
-    "clozeHint": "Use {{c1::answer}} or {{c1::answer::hint}} syntax",
+    "clozeHint": "e.g. The solar system has {{c1::eight}} planets\n\nText inside {{c1::}} becomes a blank to recall during study",
     "clozeGuideTitle": "How Cloze Cards Work",
     "clozeGuideDesc": "Wrap the answer with {{c1::}} to create a blank. It will be hidden during study.",
     "clozeExample1": "The solar system has {{c1::eight}} planets",
