@@ -29,6 +29,8 @@ const updateCardSchema = z.object({
   occlusion_data: z.any().nullable().optional(),
   media_urls: z.array(z.string().max(2000)).max(20).optional(),
   media: cardMediaSchema,
+  template_id: z.string().uuid().nullable().optional(),
+  field_values: z.record(z.string(), z.string()).nullable().optional(),
 }).strict()
 
 export async function PATCH(
@@ -55,6 +57,8 @@ export async function PATCH(
     if (body.occlusion_data !== undefined) updateData.occlusionData = body.occlusion_data
     if (body.media_urls !== undefined) updateData.mediaUrls = body.media_urls
     if (body.media !== undefined) updateData.media = body.media
+    if (body.template_id !== undefined) updateData.templateId = body.template_id
+    if (body.field_values !== undefined) updateData.fieldValues = body.field_values
 
     const [card] = await db
       .update(cards)

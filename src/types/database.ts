@@ -37,6 +37,8 @@ export interface Card {
   media: CardMedia | null
   occlusionData: OcclusionRect[] | null
   clozeData: ClozeData | null
+  templateId: string | null
+  fieldValues: Record<string, string> | null
   createdAt: string
   updatedAt: string
 }

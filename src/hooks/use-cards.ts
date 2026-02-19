@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '@/stores/auth-store'
 import { fetchJson } from '@/lib/api/fetch'
 import type { Card, CardType, CardMedia, OcclusionRect } from '@/types/database'
+import type { FieldValues } from '@/types/card-template'
 import { toast } from 'sonner'
 
 export function useCards(deckId: string) {
@@ -27,6 +28,8 @@ interface CreateCardInput {
   mediaUrls?: string[]
   media?: CardMedia | null
   occlusionData?: OcclusionRect[]
+  templateId?: string | null
+  fieldValues?: FieldValues | null
 }
 
 function toSnakeCaseBody(input: CreateCardInput) {
@@ -40,6 +43,8 @@ function toSnakeCaseBody(input: CreateCardInput) {
     media_urls: input.mediaUrls,
     media: input.media,
     occlusion_data: input.occlusionData,
+    template_id: input.templateId,
+    field_values: input.fieldValues,
   }
 }
 
@@ -79,6 +84,8 @@ export function useUpdateCard() {
       if (updates.mediaUrls !== undefined) snakeBody.media_urls = updates.mediaUrls
       if (updates.media !== undefined) snakeBody.media = updates.media
       if (updates.occlusionData !== undefined) snakeBody.occlusion_data = updates.occlusionData
+      if (updates.templateId !== undefined) snakeBody.template_id = updates.templateId
+      if (updates.fieldValues !== undefined) snakeBody.field_values = updates.fieldValues
 
       const card = await fetchJson<Card>(`/api/cards/${id}`, {
         method: 'PATCH',

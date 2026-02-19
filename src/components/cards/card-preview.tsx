@@ -11,16 +11,19 @@ import { Badge } from '@/components/ui/badge'
 import { MarkdownRenderer } from '@/components/shared/markdown-renderer'
 import { AudioPlayer } from '@/components/shared/audio-player'
 import { TTSButton } from '@/components/shared/tts-button'
+import { BlockRenderer } from '@/components/study/block-renderer'
 import { getTTSLang } from '@/lib/tts/constants'
 import type { Card } from '@/types/database'
+import type { CardTemplate } from '@/types/card-template'
 
 interface CardPreviewProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   card: Card | null
+  template?: CardTemplate | null
 }
 
-export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
+export function CardPreview({ open, onOpenChange, card, template }: CardPreviewProps) {
   const t = useTranslations('card')
 
   if (!card) return null
@@ -30,6 +33,7 @@ export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
   const allRects = isOcclusion ? (card.occlusionData ?? []) : []
 
   const ttsLang = getTTSLang(card.media?.tts?.lang)
+  const useTemplateRendering = template && card.templateId && card.fieldValues
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -37,12 +41,33 @@ export function CardPreview({ open, onOpenChange, card }: CardPreviewProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {t('preview')}
-            <Badge variant="secondary">{card.cardType}</Badge>
+            <Badge variant="secondary">
+              {useTemplateRendering ? template.name : card.cardType}
+            </Badge>
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          {isOcclusion && imageUrl ? (
+          {useTemplateRendering ? (
+            <>
+              <div className="rounded-md border p-4">
+                <p className="text-xs text-muted-foreground mb-2">{t('front')}</p>
+                <BlockRenderer
+                  blocks={template.frontBlocks}
+                  fieldValues={card.fieldValues!}
+                />
+              </div>
+              {template.backBlocks.length > 0 && (
+                <div className="rounded-md border p-4">
+                  <p className="text-xs text-muted-foreground mb-2">{t('back')}</p>
+                  <BlockRenderer
+                    blocks={template.backBlocks}
+                    fieldValues={card.fieldValues!}
+                  />
+                </div>
+              )}
+            </>
+          ) : isOcclusion && imageUrl ? (
             <div className="relative rounded-md overflow-hidden border">
               <img
                 src={imageUrl}

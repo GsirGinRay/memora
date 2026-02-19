@@ -8,6 +8,7 @@ import {
   GraduationCap,
   BarChart3,
   Settings,
+  LayoutTemplate,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,7 @@ import { cn } from '@/lib/utils'
 const navItems = [
   { href: '/', icon: LayoutDashboard, labelKey: 'dashboard' },
   { href: '/decks', icon: Library, labelKey: 'decks' },
+  { href: '/templates', icon: LayoutTemplate, labelKey: 'templates' },
   { href: '/stats', icon: BarChart3, labelKey: 'stats' },
   { href: '/settings', icon: Settings, labelKey: 'settings' },
 ] as const

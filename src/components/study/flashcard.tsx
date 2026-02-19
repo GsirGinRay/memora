@@ -3,16 +3,19 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { ImageOcclusionCard } from '@/components/study/image-occlusion-card'
 import { FlashcardFace } from '@/components/study/flashcard-face'
+import { BlockRenderer } from '@/components/study/block-renderer'
 import { useAutoTTS } from '@/hooks/use-auto-tts'
 import type { Card as CardType } from '@/types/database'
+import type { CardTemplate } from '@/types/card-template'
 
 interface FlashcardProps {
   card: CardType
   flipped: boolean
   onFlip: () => void
+  template?: CardTemplate | null
 }
 
-export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
+export function Flashcard({ card, flipped, onFlip, template }: FlashcardProps) {
   useAutoTTS({
     text: card.front,
     media: card.media,
@@ -30,6 +33,8 @@ export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
   if (card.cardType === 'image_occlusion') {
     return <ImageOcclusionCard card={card} flipped={flipped} onFlip={onFlip} />
   }
+
+  const useTemplateRendering = template && card.templateId && card.fieldValues
 
   const hasMedia = !!card.media?.front?.imageUrl || !!card.media?.front?.audioUrl ||
     !!card.media?.back?.imageUrl || !!card.media?.back?.audioUrl || !!card.media?.tts?.enabled
@@ -51,7 +56,12 @@ export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
         {/* Front */}
         <Card className="flashcard-face absolute inset-0 flex items-center justify-center">
           <CardContent className="text-center p-8 w-full">
-            {hasMedia ? (
+            {useTemplateRendering ? (
+              <BlockRenderer
+                blocks={template.frontBlocks}
+                fieldValues={card.fieldValues!}
+              />
+            ) : hasMedia ? (
               <FlashcardFace
                 text={card.front}
                 side="front"
@@ -76,7 +86,12 @@ export function Flashcard({ card, flipped, onFlip }: FlashcardProps) {
           <CardContent className="text-center p-8 w-full">
             <p className="text-sm text-muted-foreground mb-2">{card.front}</p>
             <hr className="my-4" />
-            {hasMedia ? (
+            {useTemplateRendering ? (
+              <BlockRenderer
+                blocks={template.backBlocks}
+                fieldValues={card.fieldValues!}
+              />
+            ) : hasMedia ? (
               <FlashcardFace
                 text={card.back}
                 side="back"

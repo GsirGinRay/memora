@@ -29,6 +29,8 @@ const createCardSchema = z.object({
   media_urls: z.array(z.string().max(2000)).max(20).default([]),
   cloze_data: z.any().nullable().optional(),
   occlusion_data: z.any().nullable().optional(),
+  template_id: z.string().uuid().nullable().optional(),
+  field_values: z.record(z.string(), z.string()).nullable().optional(),
 })
 
 export async function GET(
@@ -79,6 +81,8 @@ export async function POST(
         occlusionData: body.occlusion_data ?? null,
         mediaUrls: body.media_urls,
         media: body.media ?? null,
+        templateId: body.template_id ?? null,
+        fieldValues: body.field_values ?? null,
       })
       .returning()
 

@@ -13,15 +13,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useCreateCard, useUpdateCard } from '@/hooks/use-cards'
+import { useTemplates } from '@/hooks/use-templates'
 import { parseClozeText, validateClozeText } from '@/lib/cloze/parser'
 import { MediaUploadSection } from '@/components/editor/media-upload-section'
 import { TTSSettings } from '@/components/editor/tts-settings'
+import { TemplateCardForm } from '@/components/editor/template-card-form'
 import { MarkdownRenderer } from '@/components/shared/markdown-renderer'
 import { AudioPlayer } from '@/components/shared/audio-player'
+import { isBuiltInTemplateId } from '@/lib/templates/built-in'
 import { toast } from 'sonner'
 import type { Card, CardType, CardMedia } from '@/types/database'
+import type { CardTemplate, FieldValues } from '@/types/card-template'
 import { ImageOcclusionEditor } from './image-occlusion-editor'
 
 interface CardFormDialogProps {
@@ -33,6 +37,16 @@ interface CardFormDialogProps {
 
 const EMPTY_MEDIA: CardMedia = {}
 
+function getFirstTextBlockValue(
+  template: CardTemplate,
+  side: 'front' | 'back',
+  fieldValues: FieldValues
+): string {
+  const blocks = side === 'front' ? template.frontBlocks : template.backBlocks
+  const textBlock = blocks.find((b) => b.type === 'text')
+  return textBlock ? (fieldValues[textBlock.id] ?? '') : ''
+}
+
 export function CardFormDialog({
   open,
   onOpenChange,
@@ -41,17 +55,25 @@ export function CardFormDialog({
 }: CardFormDialogProps) {
   const t = useTranslations('card')
   const tCommon = useTranslations('common')
+  const tTemplate = useTranslations('template')
 
   const createCard = useCreateCard()
   const updateCard = useUpdateCard()
+  const { data: templates } = useTemplates()
 
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('built-in-basic')
   const [cardType, setCardType] = useState<CardType>('basic')
   const [front, setFront] = useState('')
   const [back, setBack] = useState('')
   const [hint, setHint] = useState('')
   const [tags, setTags] = useState('')
   const [media, setMedia] = useState<CardMedia>(EMPTY_MEDIA)
+  const [fieldValues, setFieldValues] = useState<FieldValues>({})
   const [occlusionOpen, setOcclusionOpen] = useState(false)
+
+  const selectedTemplate = templates?.find((t) => t.id === selectedTemplateId) ?? null
+  const isCustomTemplate = selectedTemplate && !selectedTemplate.isBuiltIn
+  const isBuiltIn = selectedTemplate?.isBuiltIn ?? true
 
   useEffect(() => {
     if (card) {
@@ -61,15 +83,44 @@ export function CardFormDialog({
       setHint(card.hint ?? '')
       setTags(card.tags.join(', '))
       setMedia(card.media ?? EMPTY_MEDIA)
+      setFieldValues(card.fieldValues ?? {})
+      if (card.templateId) {
+        setSelectedTemplateId(card.templateId)
+      } else {
+        const builtInId = `built-in-${card.cardType}`
+        setSelectedTemplateId(builtInId)
+      }
     } else {
+      setSelectedTemplateId('built-in-basic')
       setCardType('basic')
       setFront('')
       setBack('')
       setHint('')
       setTags('')
       setMedia(EMPTY_MEDIA)
+      setFieldValues({})
     }
   }, [card, open])
+
+  const handleTemplateChange = (templateId: string) => {
+    setSelectedTemplateId(templateId)
+
+    const tmpl = templates?.find((t) => t.id === templateId)
+    if (!tmpl) return
+
+    if (tmpl.isBuiltIn && tmpl.builtInType) {
+      setCardType(tmpl.builtInType)
+      if (tmpl.builtInType === 'image_occlusion' && !card) {
+        setOcclusionOpen(true)
+        onOpenChange(false)
+        return
+      }
+    } else {
+      setCardType('basic')
+    }
+
+    setFieldValues({})
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -78,6 +129,43 @@ export function CardFormDialog({
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean)
+
+    if (isCustomTemplate && selectedTemplate) {
+      const frontText = getFirstTextBlockValue(selectedTemplate, 'front', fieldValues)
+      const backText = getFirstTextBlockValue(selectedTemplate, 'back', fieldValues)
+
+      const payload = {
+        deckId,
+        cardType: 'basic' as CardType,
+        front: frontText || 'Template card',
+        back: backText || '',
+        hint: hint || undefined,
+        tags: tagList,
+        templateId: selectedTemplate.id,
+        fieldValues,
+        media: null as CardMedia | null,
+      }
+
+      if (card) {
+        updateCard.mutate(
+          { id: card.id, ...payload },
+          {
+            onSuccess: () => {
+              onOpenChange(false)
+              toast.success(tCommon('success'))
+            },
+          }
+        )
+      } else {
+        createCard.mutate(payload, {
+          onSuccess: () => {
+            onOpenChange(false)
+            toast.success(tCommon('success'))
+          },
+        })
+      }
+      return
+    }
 
     const clozeData =
       cardType === 'cloze' && validateClozeText(front)
@@ -99,6 +187,8 @@ export function CardFormDialog({
           tags: tagList,
           clozeData,
           media: mediaPayload,
+          templateId: isBuiltInTemplateId(selectedTemplateId) ? null : null,
+          fieldValues: null,
         },
         {
           onSuccess: () => {
@@ -130,6 +220,9 @@ export function CardFormDialog({
   }
 
   const isLoading = createCard.isPending || updateCard.isPending
+  const canSubmit = isCustomTemplate
+    ? true
+    : front.trim().length > 0
 
   return (
     <>
@@ -209,80 +302,51 @@ export function CardFormDialog({
         ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>{t('cardType')}</Label>
+            <Label>{tTemplate('selectTemplate')}</Label>
             <Select
-              value={cardType}
-              onValueChange={(v) => {
-                const newType = v as CardType
-                if (newType === 'image_occlusion' && !card) {
-                  setOcclusionOpen(true)
-                  onOpenChange(false)
-                  return
-                }
-                setCardType(newType)
-              }}
+              value={selectedTemplateId}
+              onValueChange={handleTemplateChange}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="basic">{t('basic')}</SelectItem>
-                <SelectItem value="cloze">{t('cloze')}</SelectItem>
-                <SelectItem value="image_occlusion">{t('imageOcclusion')}</SelectItem>
-                <SelectItem value="audio">{t('audio')}</SelectItem>
+                <SelectGroup>
+                  <SelectLabel>{tTemplate('builtIn')}</SelectLabel>
+                  {templates
+                    ?.filter((tmpl) => tmpl.isBuiltIn)
+                    .map((tmpl) => (
+                      <SelectItem key={tmpl.id} value={tmpl.id}>
+                        {tmpl.name}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+                {templates?.some((tmpl) => !tmpl.isBuiltIn) && (
+                  <>
+                    <SelectSeparator />
+                    <SelectGroup>
+                      <SelectLabel>{tTemplate('custom')}</SelectLabel>
+                      {templates
+                        ?.filter((tmpl) => !tmpl.isBuiltIn)
+                        .map((tmpl) => (
+                          <SelectItem key={tmpl.id} value={tmpl.id}>
+                            {tmpl.name}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>
 
-          <Tabs defaultValue="edit" className="w-full">
-            <TabsList className="w-full">
-              <TabsTrigger value="edit" className="flex-1">
-                {tCommon('edit')}
-              </TabsTrigger>
-              <TabsTrigger value="preview" className="flex-1">
-                {t('preview')}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="edit" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="front">{t('front')}</Label>
-                <textarea
-                  id="front"
-                  value={front}
-                  onChange={(e) => setFront(e.target.value)}
-                  className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  placeholder={
-                    cardType === 'cloze' ? t('clozeHint') : t('front')
-                  }
-                  required
-                />
-                <p className="text-xs text-muted-foreground">{t('media.markdownSupported')}</p>
-                <MediaUploadSection
-                  side="front"
-                  media={media}
-                  onMediaChange={setMedia}
-                />
-              </div>
-
-              {cardType !== 'cloze' && (
-                <div className="space-y-2">
-                  <Label htmlFor="back">{t('back')}</Label>
-                  <textarea
-                    id="back"
-                    value={back}
-                    onChange={(e) => setBack(e.target.value)}
-                    className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    placeholder={t('back')}
-                  />
-                  <MediaUploadSection
-                    side="back"
-                    media={media}
-                    onMediaChange={setMedia}
-                  />
-                </div>
-              )}
-
+          {isCustomTemplate && selectedTemplate ? (
+            <>
+              <TemplateCardForm
+                template={selectedTemplate}
+                fieldValues={fieldValues}
+                onFieldValuesChange={setFieldValues}
+              />
               <div className="space-y-2">
                 <Label htmlFor="hint">{t('hint')}</Label>
                 <Input
@@ -292,7 +356,6 @@ export function CardFormDialog({
                   placeholder={t('hint')}
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="tags">{t('tags')}</Label>
                 <Input
@@ -302,36 +365,107 @@ export function CardFormDialog({
                   placeholder="tag1, tag2, tag3"
                 />
               </div>
+            </>
+          ) : (
+            <Tabs defaultValue="edit" className="w-full">
+              <TabsList className="w-full">
+                <TabsTrigger value="edit" className="flex-1">
+                  {tCommon('edit')}
+                </TabsTrigger>
+                <TabsTrigger value="preview" className="flex-1">
+                  {t('preview')}
+                </TabsTrigger>
+              </TabsList>
 
-              <TTSSettings media={media} onMediaChange={setMedia} />
-            </TabsContent>
+              <TabsContent value="edit" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="front">{t('front')}</Label>
+                  <textarea
+                    id="front"
+                    value={front}
+                    onChange={(e) => setFront(e.target.value)}
+                    className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    placeholder={
+                      cardType === 'cloze' ? t('clozeHint') : t('front')
+                    }
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">{t('media.markdownSupported')}</p>
+                  <MediaUploadSection
+                    side="front"
+                    media={media}
+                    onMediaChange={setMedia}
+                  />
+                </div>
 
-            <TabsContent value="preview" className="min-h-[200px]">
-              <div className="rounded-md border p-4 space-y-4">
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t('front')}</p>
-                  {media.front?.imageUrl && (
-                    <img src={media.front.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
-                  )}
-                  <MarkdownRenderer content={front || '(empty)'} />
-                  {media.front?.audioUrl && (
-                    <AudioPlayer src={media.front.audioUrl} />
-                  )}
+                {cardType !== 'cloze' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="back">{t('back')}</Label>
+                    <textarea
+                      id="back"
+                      value={back}
+                      onChange={(e) => setBack(e.target.value)}
+                      className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      placeholder={t('back')}
+                    />
+                    <MediaUploadSection
+                      side="back"
+                      media={media}
+                      onMediaChange={setMedia}
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="hint">{t('hint')}</Label>
+                  <Input
+                    id="hint"
+                    value={hint}
+                    onChange={(e) => setHint(e.target.value)}
+                    placeholder={t('hint')}
+                  />
                 </div>
-                <hr />
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">{t('back')}</p>
-                  {media.back?.imageUrl && (
-                    <img src={media.back.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
-                  )}
-                  <MarkdownRenderer content={back || '(empty)'} />
-                  {media.back?.audioUrl && (
-                    <AudioPlayer src={media.back.audioUrl} />
-                  )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="tags">{t('tags')}</Label>
+                  <Input
+                    id="tags"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    placeholder="tag1, tag2, tag3"
+                  />
                 </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+
+                <TTSSettings media={media} onMediaChange={setMedia} />
+              </TabsContent>
+
+              <TabsContent value="preview" className="min-h-[200px]">
+                <div className="rounded-md border p-4 space-y-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">{t('front')}</p>
+                    {media.front?.imageUrl && (
+                      <img src={media.front.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
+                    )}
+                    <MarkdownRenderer content={front || '(empty)'} />
+                    {media.front?.audioUrl && (
+                      <AudioPlayer src={media.front.audioUrl} />
+                    )}
+                  </div>
+                  <hr />
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">{t('back')}</p>
+                    {media.back?.imageUrl && (
+                      <img src={media.back.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
+                    )}
+                    <MarkdownRenderer content={back || '(empty)'} />
+                    {media.back?.audioUrl && (
+                      <AudioPlayer src={media.back.audioUrl} />
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          )}
 
           <DialogFooter>
             <Button
@@ -341,7 +475,7 @@ export function CardFormDialog({
             >
               {tCommon('cancel')}
             </Button>
-            <Button type="submit" disabled={isLoading || !front.trim()}>
+            <Button type="submit" disabled={isLoading || !canSubmit}>
               {isLoading ? '...' : tCommon('save')}
             </Button>
           </DialogFooter>

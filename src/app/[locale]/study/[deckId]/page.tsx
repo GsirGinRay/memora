@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,8 @@ import { RatingButtons } from '@/components/study/rating-buttons'
 import { StudyComplete } from '@/components/study/study-complete'
 import { useStudyQueue, useSubmitReview, getSchedulingOptions } from '@/hooks/use-study'
 import { useCustomStudyQueue } from '@/hooks/use-custom-study'
+import { useTemplates } from '@/hooks/use-templates'
+import { buildTemplatesMap } from '@/lib/templates/resolve'
 import type { Rating, CustomStudyMode } from '@/types/database'
 
 export default function StudyPage() {
@@ -34,6 +36,12 @@ export default function StudyPage() {
   const { data: normalQueue, isLoading: normalLoading } = useStudyQueue(deckId)
   const { data: customQueue, isLoading: customLoading } = useCustomStudyQueue(deckId, customParams)
   const submitReview = useSubmitReview()
+  const { data: templates } = useTemplates()
+
+  const templatesMap = useMemo(
+    () => buildTemplatesMap(templates ?? []),
+    [templates]
+  )
 
   const queue = isCramMode ? customQueue : normalQueue
   const isLoading = isCramMode ? customLoading : normalLoading
@@ -51,6 +59,10 @@ export default function StudyPage() {
 
   const options = currentStudyCard && !isCramMode
     ? getSchedulingOptions(currentStudyCard.scheduling)
+    : null
+
+  const currentTemplate = currentStudyCard?.card.templateId
+    ? templatesMap.get(currentStudyCard.card.templateId) ?? null
     : null
 
   const handleFlip = useCallback(() => {
@@ -161,6 +173,7 @@ export default function StudyPage() {
             card={currentStudyCard.card}
             flipped={flipped}
             onFlip={handleFlip}
+            template={currentTemplate}
           />
 
           {!flipped ? (

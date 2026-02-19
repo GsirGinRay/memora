@@ -72,6 +72,20 @@ export const verificationTokens = pgTable(
 
 // ─── App tables ─────────────────────────────────────────
 
+export const cardTemplates = pgTable('card_templates', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 100 }).notNull(),
+  description: text('description'),
+  frontBlocks: jsonb('front_blocks').notNull(),
+  backBlocks: jsonb('back_blocks').notNull(),
+  tts: jsonb('tts'),
+  createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow().notNull(),
+})
+
 export const profiles = pgTable('profiles', {
   id: uuid('id')
     .primaryKey()
@@ -119,6 +133,8 @@ export const cards = pgTable('cards', {
   media: jsonb('media').$type<import('@/types/database').CardMedia | null>(),
   occlusionData: jsonb('occlusion_data'),
   clozeData: jsonb('cloze_data'),
+  templateId: uuid('template_id').references(() => cardTemplates.id, { onDelete: 'set null' }),
+  fieldValues: jsonb('field_values'),
   createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow().notNull(),
 })
@@ -202,6 +218,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.id] }),
   decks: many(decks),
   cards: many(cards),
+  cardTemplates: many(cardTemplates),
 }))
 
 export const decksRelations = relations(decks, ({ one, many }) => ({
@@ -209,9 +226,18 @@ export const decksRelations = relations(decks, ({ one, many }) => ({
   cards: many(cards),
 }))
 
+export const cardTemplatesRelations = relations(cardTemplates, ({ one, many }) => ({
+  user: one(users, { fields: [cardTemplates.userId], references: [users.id] }),
+  cards: many(cards),
+}))
+
 export const cardsRelations = relations(cards, ({ one, many }) => ({
   deck: one(decks, { fields: [cards.deckId], references: [decks.id] }),
   user: one(users, { fields: [cards.userId], references: [users.id] }),
+  template: one(cardTemplates, {
+    fields: [cards.templateId],
+    references: [cardTemplates.id],
+  }),
   scheduling: one(cardScheduling, {
     fields: [cards.id],
     references: [cardScheduling.cardId],

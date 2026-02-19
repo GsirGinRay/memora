@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams } from 'next/navigation'
 import { Link } from '@/i18n/routing'
@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList, ImageIcon, Shuffle } from 'lucide-react'
 import { useCards, useDeleteCard } from '@/hooks/use-cards'
+import { useTemplates } from '@/hooks/use-templates'
+import { buildTemplatesMap } from '@/lib/templates/resolve'
 import { CardFormDialog } from '@/components/editor/card-form-dialog'
 import { ImageOcclusionEditor } from '@/components/editor/image-occlusion-editor'
 import { DeleteConfirmDialog } from '@/components/cards/delete-confirm-dialog'
@@ -27,6 +29,8 @@ export default function DeckDetailPage() {
 
   const { data: cards, isLoading } = useCards(deckId)
   const deleteCard = useDeleteCard()
+  const { data: templates } = useTemplates()
+  const templatesMap = useMemo(() => buildTemplatesMap(templates ?? []), [templates])
 
   const [formOpen, setFormOpen] = useState(false)
   const [occlusionOpen, setOcclusionOpen] = useState(false)
@@ -214,6 +218,7 @@ export default function DeckDetailPage() {
         open={!!previewCard}
         onOpenChange={(open) => !open && setPreviewCard(null)}
         card={previewCard}
+        template={previewCard?.templateId ? templatesMap.get(previewCard.templateId) ?? null : null}
       />
 
       <ImageOcclusionEditor
