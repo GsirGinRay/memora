@@ -25,7 +25,7 @@ import { AudioPlayer } from '@/components/shared/audio-player'
 import { TemplateEditorDialog } from '@/components/templates/template-editor-dialog'
 import { isBuiltInTemplateId } from '@/lib/templates/built-in'
 import { toast } from 'sonner'
-import { Plus } from 'lucide-react'
+import { Plus, ImageIcon, BracketsIcon } from 'lucide-react'
 import type { Card, CardType, CardMedia } from '@/types/database'
 import type { CardTemplate, FieldValues } from '@/types/card-template'
 import { ImageOcclusionEditor } from './image-occlusion-editor'
@@ -90,8 +90,7 @@ export function CardFormDialog({
       if (card.templateId) {
         setSelectedTemplateId(card.templateId)
       } else {
-        const builtInId = `built-in-${card.cardType}`
-        setSelectedTemplateId(builtInId)
+        setSelectedTemplateId('built-in-basic')
       }
     } else {
       setSelectedTemplateId('built-in-basic')
@@ -319,16 +318,7 @@ export function CardFormDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>{tTemplate('builtIn')}</SelectLabel>
-                    {templates
-                      ?.filter((tmpl) => tmpl.isBuiltIn)
-                      .map((tmpl) => (
-                        <SelectItem key={tmpl.id} value={tmpl.id}>
-                          {tmpl.name}
-                        </SelectItem>
-                      ))}
-                  </SelectGroup>
+                  <SelectItem value="built-in-basic">Basic</SelectItem>
                   {templates?.some((tmpl) => !tmpl.isBuiltIn) && (
                     <>
                       <SelectSeparator />
@@ -355,6 +345,37 @@ export function CardFormDialog({
                 title={tTemplate('createTemplate')}
               >
                 <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={cardType === 'cloze' ? 'default' : 'outline'}
+                size="sm"
+                className="text-xs"
+                onClick={() => {
+                  setSelectedTemplateId('built-in-basic')
+                  setCardType(cardType === 'cloze' ? 'basic' : 'cloze')
+                  setFieldValues({})
+                }}
+              >
+                <BracketsIcon className="h-3 w-3 mr-1" />
+                {t('cloze')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => {
+                  if (!card) {
+                    setOcclusionOpen(true)
+                    onOpenChange(false)
+                  }
+                }}
+              >
+                <ImageIcon className="h-3 w-3 mr-1" />
+                {t('imageOcclusion')}
               </Button>
             </div>
           </div>

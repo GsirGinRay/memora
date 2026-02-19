@@ -47,25 +47,10 @@ const IMAGE_OCCLUSION_TEMPLATE: CardTemplate = {
   ],
 }
 
-const AUDIO_TEMPLATE: CardTemplate = {
-  id: 'built-in-audio',
-  name: 'Audio',
-  description: 'Audio-based flashcard',
-  isBuiltIn: true,
-  builtInType: 'audio',
-  frontBlocks: [
-    { id: 'front-text', type: 'text', label: 'Front', required: true, markdown: true },
-  ],
-  backBlocks: [
-    { id: 'back-text', type: 'text', label: 'Back', required: true, markdown: true },
-  ],
-}
-
 export const BUILT_IN_TEMPLATES: CardTemplate[] = [
   BASIC_TEMPLATE,
   CLOZE_TEMPLATE,
   IMAGE_OCCLUSION_TEMPLATE,
-  AUDIO_TEMPLATE,
 ]
 
 export function getBuiltInTemplate(cardType: CardType): CardTemplate | undefined {
