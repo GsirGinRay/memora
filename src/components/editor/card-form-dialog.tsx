@@ -22,8 +22,10 @@ import { TTSSettings } from '@/components/editor/tts-settings'
 import { TemplateCardForm } from '@/components/editor/template-card-form'
 import { MarkdownRenderer } from '@/components/shared/markdown-renderer'
 import { AudioPlayer } from '@/components/shared/audio-player'
+import { TemplateEditorDialog } from '@/components/templates/template-editor-dialog'
 import { isBuiltInTemplateId } from '@/lib/templates/built-in'
 import { toast } from 'sonner'
+import { Plus } from 'lucide-react'
 import type { Card, CardType, CardMedia } from '@/types/database'
 import type { CardTemplate, FieldValues } from '@/types/card-template'
 import { ImageOcclusionEditor } from './image-occlusion-editor'
@@ -70,6 +72,7 @@ export function CardFormDialog({
   const [media, setMedia] = useState<CardMedia>(EMPTY_MEDIA)
   const [fieldValues, setFieldValues] = useState<FieldValues>({})
   const [occlusionOpen, setOcclusionOpen] = useState(false)
+  const [templateEditorOpen, setTemplateEditorOpen] = useState(false)
 
   const selectedTemplate = templates?.find((t) => t.id === selectedTemplateId) ?? null
   const isCustomTemplate = selectedTemplate && !selectedTemplate.isBuiltIn
@@ -231,6 +234,10 @@ export function CardFormDialog({
       onOpenChange={setOcclusionOpen}
       deckId={deckId}
     />
+    <TemplateEditorDialog
+      open={templateEditorOpen}
+      onOpenChange={setTemplateEditorOpen}
+    />
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -303,41 +310,53 @@ export function CardFormDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label>{tTemplate('selectTemplate')}</Label>
-            <Select
-              value={selectedTemplateId}
-              onValueChange={handleTemplateChange}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{tTemplate('builtIn')}</SelectLabel>
-                  {templates
-                    ?.filter((tmpl) => tmpl.isBuiltIn)
-                    .map((tmpl) => (
-                      <SelectItem key={tmpl.id} value={tmpl.id}>
-                        {tmpl.name}
-                      </SelectItem>
-                    ))}
-                </SelectGroup>
-                {templates?.some((tmpl) => !tmpl.isBuiltIn) && (
-                  <>
-                    <SelectSeparator />
-                    <SelectGroup>
-                      <SelectLabel>{tTemplate('custom')}</SelectLabel>
-                      {templates
-                        ?.filter((tmpl) => !tmpl.isBuiltIn)
-                        .map((tmpl) => (
-                          <SelectItem key={tmpl.id} value={tmpl.id}>
-                            {tmpl.name}
-                          </SelectItem>
-                        ))}
-                    </SelectGroup>
-                  </>
-                )}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select
+                value={selectedTemplateId}
+                onValueChange={handleTemplateChange}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>{tTemplate('builtIn')}</SelectLabel>
+                    {templates
+                      ?.filter((tmpl) => tmpl.isBuiltIn)
+                      .map((tmpl) => (
+                        <SelectItem key={tmpl.id} value={tmpl.id}>
+                          {tmpl.name}
+                        </SelectItem>
+                      ))}
+                  </SelectGroup>
+                  {templates?.some((tmpl) => !tmpl.isBuiltIn) && (
+                    <>
+                      <SelectSeparator />
+                      <SelectGroup>
+                        <SelectLabel>{tTemplate('custom')}</SelectLabel>
+                        {templates
+                          ?.filter((tmpl) => !tmpl.isBuiltIn)
+                          .map((tmpl) => (
+                            <SelectItem key={tmpl.id} value={tmpl.id}>
+                              {tmpl.name}
+                            </SelectItem>
+                          ))}
+                      </SelectGroup>
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="shrink-0"
+                onClick={() => setTemplateEditorOpen(true)}
+                title={tTemplate('createTemplate')}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {isCustomTemplate && selectedTemplate ? (
