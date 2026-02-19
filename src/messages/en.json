@@ -84,6 +84,11 @@
     "audio": "Audio",
     "preview": "Preview",
     "clozeHint": "Use {{c1::answer}} or {{c1::answer::hint}} syntax",
+    "clozeGuideTitle": "How Cloze Cards Work",
+    "clozeGuideDesc": "Wrap the answer with {{c1::}} to create a blank. It will be hidden during study.",
+    "clozeExample1": "The solar system has {{c1::eight}} planets",
+    "clozeExample2": "{{c1::Tokyo::capital of Japan}} is one of the largest cities",
+    "clozeExampleLabel": "Examples",
     "confirmDelete": "Are you sure you want to delete this card?",
     "cards": "Cards",
     "media": {

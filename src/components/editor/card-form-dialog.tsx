@@ -418,8 +418,29 @@ export function CardFormDialog({
               </TabsList>
 
               <TabsContent value="edit" className="space-y-4">
+                {cardType === 'cloze' && (
+                  <div className="rounded-md border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950 p-3 space-y-2">
+                    <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                      {t('clozeGuideTitle')}
+                    </p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
+                      {t('clozeGuideDesc')}
+                    </p>
+                    <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+                      <p className="font-medium">{t('clozeExampleLabel')}:</p>
+                      <code className="block bg-blue-100 dark:bg-blue-900 rounded px-2 py-1">
+                        {t('clozeExample1')}
+                      </code>
+                      <code className="block bg-blue-100 dark:bg-blue-900 rounded px-2 py-1">
+                        {t('clozeExample2')}
+                      </code>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-2">
-                  <Label htmlFor="front">{t('front')}</Label>
+                  <Label htmlFor="front">
+                    {cardType === 'cloze' ? t('cloze') : t('front')}
+                  </Label>
                   <textarea
                     id="front"
                     value={front}

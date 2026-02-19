@@ -84,6 +84,11 @@
     "audio": "音訊",
     "preview": "預覽",
     "clozeHint": "使用 {{c1::答案}} 或 {{c1::答案::提示}} 語法",
+    "clozeGuideTitle": "填空卡片用法",
+    "clozeGuideDesc": "用 {{c1::}} 包住要挖空的部分，學習時該部分會被隱藏。",
+    "clozeExample1": "太陽系有 {{c1::八}} 大行星",
+    "clozeExample2": "{{c1::東京::日本首都}} 是世界最大城市之一",
+    "clozeExampleLabel": "範例",
     "confirmDelete": "確定要刪除此卡片嗎？",
     "cards": "卡片",
     "media": {
