@@ -22,6 +22,7 @@ import type { Card as CardType } from '@/types/database'
 
 export default function DeckDetailPage() {
   const t = useTranslations('card')
+  const tNav = useTranslations('nav')
   const tStudy = useTranslations('study')
   const tCommon = useTranslations('common')
   const params = useParams()
@@ -109,12 +110,12 @@ export default function DeckDetailPage() {
         </h1>
         <div className="flex gap-2">
           <Link href={`/study/${deckId}`}>
-            <Button variant="outline" size="sm" className="gap-1" title={tStudy('study')}>
+            <Button variant="outline" size="sm" className="gap-1" title={tNav('study')}>
               <BookOpen className="h-4 w-4" />
             </Button>
           </Link>
           <Link href={`/quiz/${deckId}`}>
-            <Button variant="outline" size="sm" className="gap-1" title={tStudy('quiz')}>
+            <Button variant="outline" size="sm" className="gap-1" title={tNav('quiz')}>
               <ClipboardList className="h-4 w-4" />
             </Button>
           </Link>
