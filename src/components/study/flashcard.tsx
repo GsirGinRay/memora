@@ -55,7 +55,7 @@ export function Flashcard({ card, flipped, onFlip, template }: FlashcardProps) {
       >
         {/* Front */}
         <Card className="flashcard-face absolute inset-0 flex items-center justify-center">
-          <CardContent className="text-center p-8 w-full">
+          <CardContent className="text-center p-4 sm:p-8 w-full">
             {useTemplateRendering ? (
               <BlockRenderer
                 blocks={template.frontBlocks}
@@ -83,7 +83,7 @@ export function Flashcard({ card, flipped, onFlip, template }: FlashcardProps) {
 
         {/* Back */}
         <Card className="flashcard-face flashcard-back absolute inset-0 flex items-center justify-center">
-          <CardContent className="text-center p-8 w-full">
+          <CardContent className="text-center p-4 sm:p-8 w-full">
             <p className="text-sm text-muted-foreground mb-2">{card.front}</p>
             <hr className="my-4" />
             {useTemplateRendering ? (

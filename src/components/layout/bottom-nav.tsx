@@ -21,8 +21,10 @@ export function BottomNav() {
   const t = useTranslations('nav')
   const pathname = usePathname()
 
+  if (pathname.startsWith('/study/')) return null
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background border-t lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-background border-t lg:hidden safe-bottom">
       <div className="flex items-center justify-around h-16">
         {navItems.map(({ href, icon: Icon, labelKey }) => {
           const isActive =

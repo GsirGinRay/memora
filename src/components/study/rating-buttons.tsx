@@ -49,7 +49,7 @@ export function RatingButtons({ options, onRate, disabled }: RatingButtonsProps)
           >
             <span className="font-medium">{labels[option.rating]}</span>
             <span className="text-xs opacity-80">{option.interval}</span>
-            <span className="text-[10px] opacity-60">({ratingKeys[option.rating]})</span>
+            <span className="text-[10px] opacity-60 hidden md:inline">({ratingKeys[option.rating]})</span>
           </Button>
         ))}
       </div>
@@ -66,7 +66,7 @@ export function RatingButtons({ options, onRate, disabled }: RatingButtonsProps)
           disabled={disabled}
         >
           <span className="font-medium">{labels[rating]}</span>
-          <span className="text-[10px] opacity-60">({ratingKeys[rating]})</span>
+          <span className="text-[10px] opacity-60 hidden md:inline">({ratingKeys[rating]})</span>
         </Button>
       ))}
     </div>

@@ -8,7 +8,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList, ImageIcon, Shuffle } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList, ImageIcon, Shuffle, MoreHorizontal } from 'lucide-react'
 import { useCards, useDeleteCard } from '@/hooks/use-cards'
 import { useTemplates } from '@/hooks/use-templates'
 import { buildTemplatesMap } from '@/lib/templates/resolve'
@@ -109,37 +115,72 @@ export default function DeckDetailPage() {
           {t('cards')} ({cards?.length ?? 0})
         </h1>
         <div className="flex gap-2">
-          <Link href={`/study/${deckId}`}>
-            <Button variant="outline" size="sm" className="gap-1" title={tNav('study')}>
-              <BookOpen className="h-4 w-4" />
+          {/* Desktop: show all buttons */}
+          <div className="hidden md:flex gap-2">
+            <Link href={`/study/${deckId}`}>
+              <Button variant="outline" size="sm" className="gap-1" title={tNav('study')}>
+                <BookOpen className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href={`/quiz/${deckId}`}>
+              <Button variant="outline" size="sm" className="gap-1" title={tNav('quiz')}>
+                <ClipboardList className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1"
+              onClick={() => setCustomStudyOpen(true)}
+              title={tStudy('customStudy')}
+            >
+              <Shuffle className="h-4 w-4" />
             </Button>
-          </Link>
-          <Link href={`/quiz/${deckId}`}>
-            <Button variant="outline" size="sm" className="gap-1" title={tNav('quiz')}>
-              <ClipboardList className="h-4 w-4" />
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1"
+              onClick={() => setOcclusionOpen(true)}
+              title={t('imageOcclusion')}
+            >
+              <ImageIcon className="h-4 w-4" />
             </Button>
-          </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => setCustomStudyOpen(true)}
-            title={tStudy('customStudy')}
-          >
-            <Shuffle className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => setOcclusionOpen(true)}
-            title={t('imageOcclusion')}
-          >
-            <ImageIcon className="h-4 w-4" />
-          </Button>
+          </div>
+
+          {/* Mobile: dropdown menu for study actions */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="md:hidden">
+              <Button variant="outline" size="sm">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/study/${deckId}`} className="gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  {tNav('study')}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/quiz/${deckId}`} className="gap-2">
+                  <ClipboardList className="h-4 w-4" />
+                  {tNav('quiz')}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setCustomStudyOpen(true)}>
+                <Shuffle className="h-4 w-4" />
+                {tStudy('customStudy')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setOcclusionOpen(true)}>
+                <ImageIcon className="h-4 w-4" />
+                {t('imageOcclusion')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <Button onClick={handleCreate} className="gap-2">
             <Plus className="h-4 w-4" />
-            {t('addCard')}
+            <span className="hidden sm:inline">{t('addCard')}</span>
           </Button>
         </div>
       </div>

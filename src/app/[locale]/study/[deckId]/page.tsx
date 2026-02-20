@@ -3,15 +3,18 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { useParams, useSearchParams } from 'next/navigation'
+import { Link } from '@/i18n/routing'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
+import { ArrowLeft } from 'lucide-react'
 import { Flashcard } from '@/components/study/flashcard'
 import { RatingButtons } from '@/components/study/rating-buttons'
 import { StudyComplete } from '@/components/study/study-complete'
 import { useStudyQueue, useSubmitReview, getSchedulingOptions } from '@/hooks/use-study'
 import { useCustomStudyQueue } from '@/hooks/use-custom-study'
 import { useTemplates } from '@/hooks/use-templates'
+import { useSwipe } from '@/hooks/use-swipe'
 import { buildTemplatesMap } from '@/lib/templates/resolve'
 import type { Rating, CustomStudyMode } from '@/types/database'
 
@@ -52,6 +55,7 @@ export default function StudyPage() {
   const [correctCount, setCorrectCount] = useState(0)
   const [sessionStart] = useState(() => Date.now())
   const cardStartRef = useRef(Date.now())
+  const studyAreaRef = useRef<HTMLDivElement>(null)
 
   const currentStudyCard = queue?.[currentIndex]
   const totalCards = queue?.length ?? 0
@@ -94,6 +98,15 @@ export default function StudyPage() {
     },
     [currentStudyCard, submitReview, isCramMode]
   )
+
+  const swipeHandlers = useSwipe(studyAreaRef, {
+    onSwipeLeft: useCallback(() => {
+      if (flipped) handleRate(1 as Rating)
+    }, [flipped, handleRate]),
+    onSwipeRight: useCallback(() => {
+      if (flipped) handleRate(3 as Rating)
+    }, [flipped, handleRate]),
+  })
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -146,7 +159,25 @@ export default function StudyPage() {
   const progress = totalCards > 0 ? (currentIndex / totalCards) * 100 : 0
 
   return (
-    <div className="p-4 md:p-6 space-y-6 max-w-2xl mx-auto">
+    <div
+      ref={studyAreaRef}
+      className="p-4 md:p-6 space-y-6 max-w-2xl mx-auto"
+      {...swipeHandlers}
+    >
+      <div className="flex items-center gap-2">
+        <Link href={`/decks/${deckId}`}>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div className="flex-1">
+          <Progress value={progress} className="h-2" />
+        </div>
+        <span className="text-sm text-muted-foreground shrink-0">
+          {currentIndex + 1}/{totalCards}
+        </span>
+      </div>
+
       {isCramMode && (
         <div className="flex justify-center">
           <Badge variant="secondary" className="text-sm">
@@ -154,18 +185,6 @@ export default function StudyPage() {
           </Badge>
         </div>
       )}
-
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>
-            {currentIndex + 1} / {totalCards}
-          </span>
-          <span>
-            {cardsStudied} {t('cardsStudied')}
-          </span>
-        </div>
-        <Progress value={progress} />
-      </div>
 
       {currentStudyCard && (
         <>

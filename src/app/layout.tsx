@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Memora',
   },
   icons: {
@@ -17,6 +17,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#0f172a',
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({

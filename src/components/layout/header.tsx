@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { usePathname } from '@/i18n/routing'
 import { Menu, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,8 +19,11 @@ import { LanguageSwitcher } from '@/components/shared/language-switcher'
 
 export function Header() {
   const t = useTranslations('auth')
+  const pathname = usePathname()
   const toggleSidebar = useUIStore((s) => s.toggleSidebar)
   const user = useAuthStore((s) => s.user)
+
+  if (pathname.startsWith('/study/')) return null
 
   const handleLogout = async () => {
     await signOut({ redirectTo: '/login' })

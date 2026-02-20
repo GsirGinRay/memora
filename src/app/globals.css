@@ -125,6 +125,21 @@
   }
 }
 
+/* Safe Area for mobile PWA */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.main-safe-bottom {
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  .main-safe-bottom {
+    padding-bottom: 0;
+  }
+}
+
 /* Flashcard 3D flip */
 .flashcard-perspective {
   perspective: 1000px;

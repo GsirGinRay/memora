@@ -445,7 +445,7 @@ export function CardFormDialog({
                     id="front"
                     value={front}
                     onChange={(e) => setFront(e.target.value)}
-                    className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     placeholder={
                       cardType === 'cloze' ? t('clozeHint') : t('front')
                     }
@@ -466,7 +466,7 @@ export function CardFormDialog({
                       id="back"
                       value={back}
                       onChange={(e) => setBack(e.target.value)}
-                      className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       placeholder={t('back')}
                     />
                     <MediaUploadSection
