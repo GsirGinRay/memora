@@ -108,6 +108,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const message = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json({ error: `Failed to create card: ${message}` }, { status: 500 })
+    const cause = error instanceof Error && error.cause ? String(error.cause) : undefined
+    return NextResponse.json({ error: `Failed to create card: ${message}`, cause }, { status: 500 })
   }
 }
