@@ -14,6 +14,7 @@ export function useCards(deckId: string) {
     queryKey: ['cards', deckId],
     queryFn: () => fetchJson<Card[]>(`/api/decks/${deckId}/cards`),
     enabled: !!user && !!deckId,
+    staleTime: 2 * 60 * 1000,
   })
 }
 

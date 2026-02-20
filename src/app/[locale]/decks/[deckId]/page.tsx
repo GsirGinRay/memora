@@ -7,6 +7,7 @@ import { Link } from '@/i18n/routing'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Plus, ArrowLeft, Pencil, Trash2, BookOpen, ClipboardList, ImageIcon, Shuffle } from 'lucide-react'
 import { useCards, useDeleteCard } from '@/hooks/use-cards'
 import { useTemplates } from '@/hooks/use-templates'
@@ -74,8 +75,23 @@ export default function DeckDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-4 md:p-6">
-        <p className="text-muted-foreground">{tCommon('loading')}</p>
+      <div className="p-4 md:p-6 space-y-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-8 w-40" />
+        </div>
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 rounded-lg border p-3">
+              <Skeleton className="h-10 w-10 rounded shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+              <Skeleton className="h-5 w-12 rounded-full" />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
@@ -93,12 +109,12 @@ export default function DeckDetailPage() {
         </h1>
         <div className="flex gap-2">
           <Link href={`/study/${deckId}`}>
-            <Button variant="outline" size="sm" className="gap-1">
+            <Button variant="outline" size="sm" className="gap-1" title={tStudy('study')}>
               <BookOpen className="h-4 w-4" />
             </Button>
           </Link>
           <Link href={`/quiz/${deckId}`}>
-            <Button variant="outline" size="sm" className="gap-1">
+            <Button variant="outline" size="sm" className="gap-1" title={tStudy('quiz')}>
               <ClipboardList className="h-4 w-4" />
             </Button>
           </Link>
@@ -142,6 +158,7 @@ export default function DeckDetailPage() {
                       src={card.mediaUrls[0]}
                       alt=""
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
                 ) : null}
@@ -149,12 +166,12 @@ export default function DeckDetailPage() {
                   <p className="font-medium truncate">
                     {card.cardType === 'image_occlusion'
                       ? card.back || t('imageOcclusion')
-                      : card.front || '(empty)'}
+                      : card.front || '-'}
                   </p>
                   <p className="text-sm text-muted-foreground truncate">
                     {card.cardType === 'image_occlusion'
                       ? t('imageOcclusion')
-                      : card.back || '(empty)'}
+                      : card.back || '-'}
                   </p>
                 </div>
                 <Badge variant="secondary" className="shrink-0">

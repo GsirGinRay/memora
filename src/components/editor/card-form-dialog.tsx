@@ -25,7 +25,7 @@ import { AudioPlayer } from '@/components/shared/audio-player'
 import { TemplateEditorDialog } from '@/components/templates/template-editor-dialog'
 import { isBuiltInTemplateId } from '@/lib/templates/built-in'
 import { toast } from 'sonner'
-import { Plus, ImageIcon, BracketsIcon } from 'lucide-react'
+import { Plus, ImageIcon, BracketsIcon, Loader2 } from 'lucide-react'
 import type { Card, CardType, CardMedia } from '@/types/database'
 import type { CardTemplate, FieldValues } from '@/types/card-template'
 import { ImageOcclusionEditor } from './image-occlusion-editor'
@@ -318,7 +318,7 @@ export function CardFormDialog({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="built-in-basic">Basic</SelectItem>
+                  <SelectItem value="built-in-basic">{t('basic')}</SelectItem>
                   {templates?.some((tmpl) => !tmpl.isBuiltIn) && (
                     <>
                       <SelectSeparator />
@@ -507,7 +507,7 @@ export function CardFormDialog({
                     {media.front?.imageUrl && (
                       <img src={media.front.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
                     )}
-                    <MarkdownRenderer content={front || '(empty)'} />
+                    <MarkdownRenderer content={front || '-'} />
                     {media.front?.audioUrl && (
                       <AudioPlayer src={media.front.audioUrl} />
                     )}
@@ -518,7 +518,7 @@ export function CardFormDialog({
                     {media.back?.imageUrl && (
                       <img src={media.back.imageUrl} alt="" className="max-h-32 rounded-md mb-2" />
                     )}
-                    <MarkdownRenderer content={back || '(empty)'} />
+                    <MarkdownRenderer content={back || '-'} />
                     {media.back?.audioUrl && (
                       <AudioPlayer src={media.back.audioUrl} />
                     )}
@@ -537,7 +537,8 @@ export function CardFormDialog({
               {tCommon('cancel')}
             </Button>
             <Button type="submit" disabled={isLoading || !canSubmit}>
-              {isLoading ? '...' : tCommon('save')}
+              {isLoading && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+              {tCommon('save')}
             </Button>
           </DialogFooter>
         </form>

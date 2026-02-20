@@ -7,6 +7,7 @@ import { Plus } from 'lucide-react'
 import { DeckCard } from '@/components/cards/deck-card'
 import { DeckFormDialog } from '@/components/cards/deck-form-dialog'
 import { DeleteConfirmDialog } from '@/components/cards/delete-confirm-dialog'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useDecks, useCreateDeck, useUpdateDeck, useDeleteDeck } from '@/hooks/use-decks'
 import { toast } from 'sonner'
 import type { Deck } from '@/types/database'
@@ -78,8 +79,26 @@ export default function DecksPage() {
 
   if (isLoading) {
     return (
-      <div className="p-4 md:p-6">
-        <p className="text-muted-foreground">{tCommon('loading')}</p>
+      <div className="p-4 md:p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-9 w-28 rounded-md" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-lg border p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-4 w-4 rounded-full" />
+                <Skeleton className="h-5 w-2/3" />
+              </div>
+              <Skeleton className="h-3 w-full" />
+              <div className="flex justify-between">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
