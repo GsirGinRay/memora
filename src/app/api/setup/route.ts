@@ -26,6 +26,15 @@ export async function GET() {
 
   try {
     await db.execute(sql`
+      ALTER TABLE cards ADD COLUMN IF NOT EXISTS media JSONB
+    `)
+    results.push('cards.media column: OK')
+  } catch (e) {
+    results.push(`cards.media: ${e instanceof Error ? e.message : 'failed'}`)
+  }
+
+  try {
+    await db.execute(sql`
       ALTER TABLE cards ADD COLUMN IF NOT EXISTS template_id UUID
     `)
     results.push('cards.template_id column: OK')
